@@ -9,7 +9,10 @@ Live preview of the homepage: https://claude.ai/artifact/JaF5CzfGopBHiwbvLhaFMm 
 | [`sharepoint/atlas-training-hub.html`](sharepoint/atlas-training-hub.html) | **The file to upload.** The homepage as a SharePoint HTML page, with fonts embedded. Built from the source below |
 | [`sharepoint/src/atlas-training-hub.html`](sharepoint/src/atlas-training-hub.html) | The page source to edit: styles, content data and the settings block |
 | [`sharepoint/fonts/`](sharepoint/fonts) | DM Sans and DM Mono (WiseTech Global brand typefaces), Latin subset, WOFF2 |
-| [`tools/build.py`](tools/build.py) | Embeds the fonts and writes the upload file |
+| [`sharepoint/training-hub.html`](sharepoint/training-hub.html) | **The Training Hub homepage to upload.** The Training Hub mockup with new quick links and a Project Timeline. Fonts and photos embedded. See [Training Hub homepage](#training-hub-homepage) |
+| [`sharepoint/src/training-hub.html`](sharepoint/src/training-hub.html) | Its source: styles, content and the settings block |
+| [`sharepoint/images/`](sharepoint/images) | Photos for the Training Hub homepage (from Unsplash, standing in for your own photography) |
+| [`tools/build.py`](tools/build.py) | Embeds the fonts and photos and writes the upload files, one per page in `sharepoint/src` |
 | [`docs/PLAN.md`](docs/PLAN.md) | The plan: outcomes, audiences, resource types, site map, homepage sections, content model, SharePoint build approach, governance, roadmap and open decisions |
 | [`prototype/home.html`](prototype/home.html) | The original concept prototype, with the Build notes overlay that maps each section to a SharePoint web part |
 
@@ -32,6 +35,40 @@ Live preview of the homepage: https://claude.ai/artifact/JaF5CzfGopBHiwbvLhaFMm 
    - The page reads well in the SharePoint mobile app
 
 The procedure guides, business areas and Business Process Owners live in the CONTENT block (`AREAS`, `PGS`, `PATHS`). Add a guide by adding a line to `PGS`; its PDF link is built from the number and title, matching the library's `<number>-<title> PG.pdf` file names. The learning paths are a proposed grouping of those guides by role.
+
+## Training Hub homepage
+
+`sharepoint/training-hub.html` recreates the Training Hub mockup with two changes:
+
+- **Quick links:** the hero tiles are Support, WiseTech Academy, Procedure Guides, Quick Reference Guides, Communications, D365 Templates, Success Stories and Recordings.
+- **Project Timeline replaces Upcoming Training.** It shows a countdown to the next go-live, a roadmap of milestones, events and go-lives with a marker for today, and details for the milestone someone selects. Completed, Up next and Planned come from today's date.
+
+Action Required, Resources for your role, My Training Bookmarks, Feedback and the footer follow the mockup. Live preview: https://claude.ai/artifact/LouimmFEdSB5QB1WApiEKy (private; share it from the page's Share menu)
+
+To put it on SharePoint:
+
+1. In `sharepoint/src/training-hub.html`, fill in the **SETTINGS** block at the top of the script: `siteUrl` (hero search), `linkTarget`, and `feedbackForm`.
+2. Run `python3 tools/build.py`.
+3. Upload `sharepoint/training-hub.html` to Site Pages and publish it, as in the steps above.
+
+To change the content, search the source for these markers:
+
+| Marker | What to change |
+| --- | --- |
+| `QUICK LINKS` | The `href` of each of the eight tiles |
+| `TIMELINE` | One `<li>` per milestone, oldest first: `data-date` (YYYY-MM-DD), `data-kind` (`milestone`, `event` or `golive`), the title, and the hidden note shown in the detail row |
+| `ACTION REQUIRED` | Each item's title, `data-due` date and link |
+| `ROLE CARDS` | Four cards per role tab; the photos are set in the `th-card-img` styles |
+| `BOOKMARKS` | The default bookmarks |
+
+How the sandbox shapes this page:
+
+- **Greeting:** reads "How can I help you today?" because the page can't tell who is viewing.
+- **Action Required:** lists the same mandatory items for everyone. An item turns pink 7 days before it is due and shows Overdue after.
+- **Bookmarks:** anything people add or remove lasts until they leave the page.
+- **Feedback:** Submit opens the Microsoft Forms link in `feedbackForm` in a new tab. Use the form's pre-filled link with `FEEDBACK` as the answer, and the typed text carries across.
+
+All milestones, dates and role-card text are sample content.
 
 ## What SharePoint HTML pages allow
 

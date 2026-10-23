@@ -1,0 +1,1335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Training Hub Home</title>
+<meta name="description" content="Training Hub homepage for SharePoint: quick links, project timeline, action required, role resources, bookmarks and feedback">
+<!-- @fonts: tools/build.py replaces this line with DM Sans and DM Mono embedded as base64 WOFF2 -->
+<!--
+  Training Hub homepage, SharePoint HTML page.
+
+  SharePoint renders this file in a sandboxed frame below its own header and navigation: no data calls,
+  no browser storage and no form submission. tools/build.py embeds the fonts and the photos in
+  sharepoint/images, so the upload is one self-contained file. CSS is scoped under .th and script under
+  #th-root. The layout and content render without script; the script adds the timeline status, due-date
+  flags, role tabs, bookmarks, feedback and search.
+
+  To edit content, search this file for:
+    SETTINGS        site URL, where links open, feedback form, due-soon window (in the script at the bottom)
+    QUICK LINKS     the eight hero tiles (replace each href="#")
+    TIMELINE        milestones: one <li> each, oldest first
+    ACTION REQUIRED mandatory items with a due date
+    ROLE CARDS      four cards per role tab
+    BOOKMARKS       default bookmarks
+-->
+<style>
+/* Layout: a full-width lavender hero with a portrait arch and glass quick-link tiles, then a 1200px
+   content well on one lavender band: timeline (2/3) beside Action Required (1/3), role resources,
+   bookmarks beside feedback, and a dark footer strip. Deliberately light-only: SharePoint renders
+   site pages in the light site theme. */
+.th {
+  --th-navy: #1d1765;
+  --th-navy-2: #2c2596;
+  --th-ink: #17153a;
+  --th-text: #2e2c4f;
+  --th-muted: #5d5b7c;
+  --th-accent: #7a76ec;
+  --th-accent-strong: #4a3fd6;
+  --th-accent-200: #c3c1f7;
+  --th-accent-soft: #e6e5fb;
+  --th-lilac: #edecf9;
+  --th-lilac-2: #f5f4fd;
+  --th-hero-top: #f4f3fc;
+  --th-hero-bottom: #e5e4f7;
+  --th-line: #dddbf1;
+  --th-field: #8e8cab;
+  --th-surface: #ffffff;
+  --th-on-dark: #ffffff;
+  --th-on-dark-muted: rgba(255, 255, 255, 0.78);
+  --th-alert: #d93644;
+  --th-alert-soft: #f7c3cc;
+  --th-alert-ink: #4b1f2e;
+  --th-warm: #c2551a;
+  --th-warm-soft: #fde4d4;
+  --th-green: #157a54;
+  --th-green-soft: #d8f2e6;
+  --th-foot: #0f0f22;
+  --th-foot-text: #c8c7de;
+  --th-shadow: 0 1px 2px rgba(29, 23, 101, 0.06), 0 12px 28px -14px rgba(29, 23, 101, 0.22);
+  --th-shadow-lift: 0 2px 4px rgba(29, 23, 101, 0.08), 0 18px 36px -16px rgba(29, 23, 101, 0.32);
+  --th-font: "DM Sans", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --th-mono: "DM Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
+  --th-ease: cubic-bezier(0.2, 0, 0.1, 1);
+
+  color-scheme: light;
+  position: relative;
+  background: var(--th-lilac);
+  color: var(--th-text);
+  font: 400 15px/1.55 var(--th-font);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+/* Standalone or in an iframe the page owns <body>; inside a SharePoint page it never matches. */
+body:has(> .th) { margin: 0; background: var(--th-lilac); }
+
+/* Resets use :where() so they carry no specificity and every component rule below wins. */
+:where(.th) *, :where(.th) *::before, :where(.th) *::after { box-sizing: border-box; }
+:where(.th) :where(h1, h2, h3, p, ul, ol, figure) { margin: 0; }
+:where(.th) :where(ul, ol) { padding: 0; list-style: none; }
+:where(.th) a { color: var(--th-accent-strong); }
+:where(.th) :where(button, input, textarea) { font: inherit; color: inherit; }
+:where(.th) button { cursor: pointer; }
+:where(.th) img { max-width: 100%; height: auto; display: block; }
+.th :focus-visible { outline: 2px solid var(--th-accent-strong); outline-offset: 2px; }
+.th [hidden] { display: none !important; }
+.th-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.th-ic { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+.th-wrap {
+  max-width: 1248px;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 720px) {
+  .th-wrap {
+    padding-left: max(24px, env(safe-area-inset-left, 0px));
+    padding-right: max(24px, env(safe-area-inset-right, 0px));
+  }
+}
+
+/* ---------- Section headings ---------- */
+.th-h2 {
+  position: relative;
+  padding-left: 16px;
+  font: 700 clamp(1.5rem, 1.25rem + 0.8vw, 1.875rem)/1.15 var(--th-font);
+  letter-spacing: -0.015em;
+  color: var(--th-ink);
+  text-wrap: balance;
+}
+.th-h2::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0.08em; bottom: 0.02em;
+  width: 5px;
+  border-radius: 2px;
+  background: var(--th-accent);
+}
+.th-h2.is-alert::before { background: var(--th-alert); }
+.th-sec-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px; margin-bottom: 22px; }
+
+/* ---------- Hero ---------- */
+.th-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(180deg, var(--th-hero-top) 0%, var(--th-hero-bottom) 100%);
+}
+.th-deco { position: absolute; pointer-events: none; z-index: -1; }
+.th-deco-arc {
+  width: 1100px; height: 1100px;
+  left: 34%; top: -760px;
+  border-radius: 50%;
+  border: 70px solid rgba(255, 255, 255, 0.55);
+}
+.th-deco-orb {
+  width: 300px; height: 300px;
+  top: 40px;
+  left: max(-290px, calc((100% - 1200px) / 2 - 316px));
+  border-radius: 50%;
+  background: radial-gradient(circle at 70% 35%, #a7a8f6 0%, #7c7eec 55%, #6264e0 100%);
+}
+.th-deco-dots {
+  background-image: radial-gradient(circle, var(--th-navy) 1.4px, transparent 1.7px);
+  background-size: 10px 10px;
+  opacity: 0.75;
+}
+.th-deco-dots.is-left { width: 60px; height: 100px; left: max(12px, calc((100% - 1200px) / 2 - 70px)); top: 330px; }
+.th-deco-dots.is-right { width: 40px; height: 30px; right: 18px; bottom: 26px; }
+.th-deco-line { right: max(8px, calc((100% - 1200px) / 2 - 110px)); bottom: 0; width: 100px; height: 320px; color: var(--th-navy); }
+
+.th-hero-in {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+  column-gap: 32px;
+  padding-top: 56px;
+}
+.th-hero-copy { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 18px; position: relative; z-index: 2; }
+.th-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 28px; padding: 0 12px;
+  border-radius: 6px;
+  background: var(--th-surface);
+  box-shadow: 0 1px 2px rgba(29, 23, 101, 0.08);
+  font: 700 11px/1 var(--th-font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--th-navy);
+}
+.th-badge .th-ic { width: 15px; height: 15px; stroke-width: 2; }
+.th-h1 {
+  max-width: 11.5em;
+  font: 700 clamp(2.25rem, 1.5rem + 2.4vw, 3.375rem)/1.1 var(--th-font);
+  letter-spacing: -0.025em;
+  color: var(--th-ink);
+  text-wrap: balance;
+}
+.th-lede { max-width: 34em; font-size: 15px; line-height: 1.55; color: var(--th-text); }
+
+.th-search {
+  position: relative;
+  display: flex; align-items: center; gap: 4px;
+  width: min(100%, 430px);
+  height: 46px;
+  margin-top: 6px;
+  padding: 0 6px 0 14px;
+  border-radius: 999px;
+  background: var(--th-surface);
+  border: 1px solid var(--th-line);
+  box-shadow: 0 6px 18px -10px rgba(29, 23, 101, 0.35);
+}
+.th-search:focus-within { border-color: var(--th-accent-strong); box-shadow: 0 0 0 3px var(--th-accent-soft); }
+.th-search > .th-ic { color: var(--th-accent); width: 19px; height: 19px; }
+.th-search input {
+  flex: 1; min-width: 0; height: 100%;
+  padding: 0 6px;
+  border: 0; background: transparent;
+  font-size: 14px;
+  color: var(--th-ink);
+}
+.th-search input:focus { outline: none; }
+.th-search input::placeholder { color: var(--th-muted); }
+.th-search input::-webkit-search-cancel-button { display: none; }
+.th-icon-btn {
+  display: inline-grid; place-items: center;
+  width: 34px; height: 34px;
+  border: 0; border-radius: 50%;
+  background: transparent;
+  color: var(--th-muted);
+  transition: background 120ms var(--th-ease), color 120ms var(--th-ease);
+}
+.th-icon-btn:hover { background: var(--th-accent-soft); color: var(--th-accent-strong); }
+.th-icon-btn .th-ic { width: 18px; height: 18px; }
+.th-search input:placeholder-shown ~ .th-search-clear { display: none; }
+.th-search::after {
+  content: "";
+  position: absolute;
+  right: -46px; top: -22px;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #a9abf7, #6567e2);
+  pointer-events: none;
+}
+
+/* Portrait */
+.th-hero-photo {
+  grid-column: 2; grid-row: 1 / span 2;
+  align-self: end; justify-self: end;
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 340 / 410;
+  z-index: 1;
+}
+.th-hero-photo::before {
+  content: "";
+  position: absolute;
+  left: -14%; right: -14%; top: 4%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #e2e0fa 55%, #d0cdf5 100%);
+  z-index: -1;
+}
+.th-hero-photo img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 20%;
+  border-radius: 190px 190px 0 0;
+  background: var(--th-accent-soft);
+}
+.th-hero-sign {
+  position: absolute;
+  top: 9%; right: -10px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--th-navy-2), var(--th-navy));
+  color: var(--th-on-dark);
+  font: 700 16px/1.05 var(--th-font);
+  letter-spacing: -0.01em;
+  box-shadow: 0 16px 30px -14px rgba(29, 23, 101, 0.6);
+}
+.th-hero-sign .th-ic { width: 30px; height: 30px; stroke-width: 1.6; }
+
+/* Quick links */
+.th-tiles { grid-column: 1; grid-row: 2; position: relative; z-index: 2; padding-block: 34px 40px; }
+.th-tiles ul { position: relative; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 10px; }
+.th-tiles ul::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: calc(62.5% - 118px); top: -18px;
+  width: 236px; height: 236px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, #c3c3f9 0%, #a3a4f4 50%, #8e90ef 100%);
+}
+.th-tile {
+  display: flex; flex-direction: column; align-items: center; gap: 9px;
+  text-decoration: none;
+  color: var(--th-navy);
+}
+.th-tile-box {
+  display: grid; place-items: center;
+  width: min(74px, 100%);
+  aspect-ratio: 1;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 22px -12px rgba(29, 23, 101, 0.35);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: transform 160ms var(--th-ease), box-shadow 160ms var(--th-ease), border-color 160ms var(--th-ease);
+}
+.th-tile-ic {
+  display: grid; place-items: center;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: var(--th-accent-soft);
+  color: var(--th-accent-strong);
+}
+.th-tile-ic .th-ic { width: 23px; height: 23px; }
+.th-tile[data-tone="warm"] .th-tile-ic { background: var(--th-warm-soft); color: var(--th-warm); }
+.th-tile[data-tone="green"] .th-tile-ic { background: var(--th-green-soft); color: var(--th-green); }
+.th-tile-label {
+  margin-inline: -4px;
+  font: 700 12px/1.25 var(--th-font);
+  text-align: center;
+  hyphens: auto;
+}
+.th-tile:hover .th-tile-box, .th-tile:focus-visible .th-tile-box { transform: translateY(-3px); border-color: var(--th-accent-200); box-shadow: 0 16px 28px -14px rgba(29, 23, 101, 0.5); }
+.th-tile:focus-visible { outline: none; }
+.th-tile:focus-visible .th-tile-box { outline: 2px solid var(--th-accent-strong); outline-offset: 2px; }
+
+/* ---------- Timeline + Action Required ---------- */
+.th-main { padding-block: 56px 40px; display: grid; grid-template-columns: minmax(0, 2.3fr) minmax(0, 1fr); gap: 40px 48px; align-items: start; }
+.th-main > section { min-width: 0; }
+
+.th-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--th-muted); }
+.th-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.th-key { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--th-accent-200); background: var(--th-surface); }
+.th-key.is-done { background: var(--th-accent); border-color: var(--th-accent); }
+.th-key.is-next { border-color: var(--th-accent-strong); border-width: 3px; }
+.th-key.is-today { position: relative; isolation: isolate; width: 10px; height: 10px; border: 0; background: var(--th-navy); }
+.th-key.is-today::before { top: -4px; bottom: -4px; }
+.th-key.is-golive { background: var(--th-navy); border-color: var(--th-navy); border-radius: 4px; transform: rotate(45deg) scale(0.85); }
+
+.th-tl-card {
+  display: grid; gap: 18px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--th-surface);
+  box-shadow: var(--th-shadow);
+}
+
+/* Next go-live spotlight */
+.th-golive {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px 28px;
+  padding: 20px 24px;
+  border-radius: 12px;
+  background: linear-gradient(120deg, var(--th-navy) 0%, var(--th-navy-2) 100%);
+  color: var(--th-on-dark);
+}
+.th-golive::before, .th-golive::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+}
+.th-golive::before { width: 260px; height: 260px; right: -60px; top: -120px; }
+.th-golive::after { width: 140px; height: 140px; right: 150px; bottom: -100px; }
+.th-golive-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 500 11.5px/1 var(--th-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #cfccff;
+}
+.th-golive-eyebrow .th-ic { width: 16px; height: 16px; }
+.th-golive h3 { margin-top: 10px; font: 700 clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem)/1.2 var(--th-font); letter-spacing: -0.01em; }
+.th-golive-when { margin-top: 4px; font-size: 14px; color: var(--th-on-dark-muted); }
+.th-golive-progress { margin-top: 14px; display: grid; gap: 7px; max-width: 360px; }
+.th-golive-progress span { font-size: 12.5px; color: var(--th-on-dark-muted); }
+.th-bar { height: 6px; border-radius: 6px; background: rgba(255, 255, 255, 0.18); overflow: hidden; }
+.th-bar i { display: block; height: 100%; width: var(--done, 0%); border-radius: inherit; background: linear-gradient(90deg, #a9a6ff, #e0deff); }
+.th-countdown { display: grid; justify-items: center; min-width: 120px; padding: 12px 16px; border-radius: 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.16); text-align: center; }
+.th-countdown b { font: 700 46px/1 var(--th-font); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.th-countdown span { margin-top: 4px; font-size: 13px; color: var(--th-on-dark-muted); }
+
+/* Roadmap track */
+.th-tl-scroll { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+.th-tl {
+  --row: 74px;
+  --dot-row: 50px;
+  --pad: 32px;
+  position: relative;
+  min-width: calc(var(--n, 9) * 64px + 2 * var(--pad));
+  padding-inline: var(--pad);
+}
+.th-tl-rail {
+  position: absolute;
+  top: calc(var(--row) + var(--dot-row) / 2 - 2px);
+  left: calc(var(--pad) + (100% - 2 * var(--pad)) / var(--n, 9) / 2);
+  right: calc(var(--pad) + (100% - 2 * var(--pad)) / var(--n, 9) / 2);
+  height: 4px;
+  border-radius: 4px;
+  background: var(--th-accent-soft);
+}
+.th-tl-fill { position: absolute; inset: 0 auto 0 0; width: calc(var(--progress, 0) * 100%); border-radius: inherit; background: linear-gradient(90deg, var(--th-accent), var(--th-accent-strong)); }
+.th-tl-today {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--progress, 0) * 100%);
+  width: 12px; height: 12px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--th-navy);
+  box-shadow: 0 0 0 3px var(--th-surface);
+}
+.th-tl-today::before, .th-key.is-today::before {
+  content: "";
+  position: absolute;
+  left: 50%; top: -12px; bottom: -12px;
+  width: 2px;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  background: var(--th-navy);
+  z-index: -1;
+}
+.th-tl-track { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(var(--n, 9), minmax(0, 1fr)); }
+.th-ms { position: relative; min-width: 0; }
+.th-ms-btn {
+  display: grid;
+  grid-template-rows: var(--row) var(--dot-row) var(--row);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: center;
+  pointer-events: none;
+}
+.th-ms-btn:focus-visible { outline: none; }
+.th-ms-dot, .th-ms-label { pointer-events: auto; }
+.th-ms-dot {
+  grid-row: 2;
+  align-self: center; justify-self: center;
+  display: grid; place-items: center;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--th-accent-200);
+  background: var(--th-surface);
+  color: var(--th-accent-strong);
+  transition: transform 160ms var(--th-ease);
+}
+.th-ms-dot .th-ic { width: 15px; height: 15px; stroke-width: 2; }
+.th-ms.is-done .th-ms-dot { background: var(--th-accent); border-color: var(--th-accent); color: var(--th-on-dark); }
+.th-ms.is-next .th-ms-dot { width: 36px; height: 36px; border: 3px solid var(--th-accent-strong); box-shadow: 0 0 0 6px rgba(74, 63, 214, 0.14); animation: th-pulse 2.6s ease-out infinite; }
+.th-ms[data-kind="golive"] .th-ms-dot { width: 42px; height: 42px; border: 0; background: var(--th-navy); color: var(--th-on-dark); box-shadow: 0 0 0 5px rgba(29, 23, 101, 0.12); }
+.th-ms[data-kind="golive"].is-done .th-ms-dot { background: var(--th-accent); box-shadow: 0 0 0 5px rgba(122, 118, 236, 0.18); }
+.th-ms[data-kind="golive"] .th-ms-dot .th-ic { width: 20px; height: 20px; stroke-width: 1.8; }
+.th-ms-btn:hover .th-ms-dot { transform: scale(1.08); }
+.th-ms-btn:focus-visible .th-ms-dot { outline: 2px solid var(--th-accent-strong); outline-offset: 4px; }
+@keyframes th-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(74, 63, 214, 0.32); }
+  70% { box-shadow: 0 0 0 10px rgba(74, 63, 214, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(74, 63, 214, 0); }
+}
+.th-ms-label {
+  grid-row: 1;
+  align-self: end;
+  justify-self: start;
+  width: 128px;
+  margin-left: calc(50% - 64px);
+  padding: 6px 8px;
+  border-radius: 10px;
+  display: grid; gap: 3px;
+  transition: background 160ms var(--th-ease);
+}
+.th-ms:nth-child(even) .th-ms-label { grid-row: 3; align-self: start; }
+.th-ms-label time { font: 500 11px/1.2 var(--th-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--th-muted); }
+.th-ms-label strong { font-size: 13.5px; line-height: 1.3; font-weight: 700; color: var(--th-ink); }
+.th-ms[data-kind="golive"] .th-ms-label time { color: var(--th-accent-strong); }
+.th-ms[data-kind="golive"] .th-ms-label strong { color: var(--th-navy); }
+.th-ms.is-done:not([data-kind="golive"]) .th-ms-label strong { color: var(--th-text); font-weight: 500; }
+.th-ms-btn:hover .th-ms-label { background: var(--th-lilac-2); }
+.th-ms-btn[aria-pressed="true"] .th-ms-label { background: var(--th-accent-soft); }
+.th-ms-btn:focus-visible .th-ms-label strong { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Selected milestone detail, styled like an event row */
+.th-tl-detail {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 18px;
+  padding: 14px 18px 14px 12px;
+  border-radius: 12px;
+  border-right: 5px solid var(--th-navy);
+  background: var(--th-lilac-2);
+}
+.th-tl-date { display: grid; justify-items: center; width: 62px; padding-right: 14px; border-right: 1px solid var(--th-line); line-height: 1; }
+.th-tl-date b { font: 700 26px/1 var(--th-font); color: var(--th-ink); font-variant-numeric: tabular-nums; }
+.th-tl-date span { margin-top: 5px; font: 500 11px/1 var(--th-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--th-muted); }
+.th-tl-body { display: grid; gap: 3px; min-width: 0; }
+.th-tl-kind { font: 500 11px/1.3 var(--th-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--th-accent-strong); }
+.th-tl-body h3 { font: 700 16px/1.3 var(--th-font); color: var(--th-ink); }
+.th-tl-body p { font-size: 13.5px; line-height: 1.5; color: var(--th-muted); max-width: 62ch; }
+.th-pill {
+  display: inline-flex; align-items: center;
+  height: 26px; padding: 0 12px;
+  border-radius: 999px;
+  background: var(--th-navy);
+  color: var(--th-on-dark);
+  font: 700 12px/1 var(--th-font);
+  white-space: nowrap;
+}
+.th-pill.is-done { background: var(--th-accent-soft); color: var(--th-accent-strong); }
+
+/* Action Required */
+.th-act-list { display: grid; gap: 12px; }
+.th-act a {
+  display: grid; gap: 4px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: var(--th-surface);
+  box-shadow: var(--th-shadow);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 160ms var(--th-ease), box-shadow 160ms var(--th-ease);
+}
+.th-act a:hover { transform: translateY(-2px); box-shadow: var(--th-shadow-lift); }
+.th-act strong { font-size: 14.5px; line-height: 1.35; color: var(--th-ink); }
+.th-act-due { font-size: 12.5px; color: var(--th-muted); font-variant-numeric: tabular-nums; }
+.th-act.is-urgent a { background: var(--th-alert-soft); }
+.th-act.is-urgent strong { color: var(--th-alert-ink); }
+.th-act.is-urgent .th-act-due { color: var(--th-alert-ink); }
+.th-act-flag { margin-left: 6px; font-weight: 700; color: var(--th-alert); }
+.th-act-flag.is-overdue { display: inline-block; padding: 1px 7px; border-radius: 999px; background: var(--th-alert); color: var(--th-on-dark); font-size: 11px; letter-spacing: 0.02em; }
+
+/* ---------- Resources for your role ---------- */
+.th-res { padding-block: 40px 72px; text-align: center; }
+.th-res-title { font: 700 clamp(1.625rem, 1.3rem + 1vw, 2.125rem)/1.15 var(--th-font); letter-spacing: -0.02em; color: var(--th-ink); text-wrap: balance; }
+.th-res-title::after { content: ""; display: block; width: 136px; height: 5px; margin: 16px auto 0; border-radius: 5px; background: var(--th-accent); }
+.th-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 14px; margin-top: 30px; }
+.th-tab {
+  height: 42px; padding: 0 24px;
+  border: 0; border-radius: 999px;
+  background: var(--th-surface);
+  color: var(--th-navy);
+  font-size: 16px; font-weight: 500;
+  box-shadow: 0 1px 2px rgba(29, 23, 101, 0.06);
+  transition: background 140ms var(--th-ease), color 140ms var(--th-ease);
+}
+.th-tab:hover { background: var(--th-accent-soft); }
+.th-tab[aria-selected="true"] { background: var(--th-navy); color: var(--th-on-dark); font-weight: 700; }
+.th-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; margin-top: 34px; text-align: left; }
+.th-card {
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--th-surface);
+  box-shadow: var(--th-shadow);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 180ms var(--th-ease), box-shadow 180ms var(--th-ease);
+}
+.th-card:hover { transform: translateY(-3px); box-shadow: var(--th-shadow-lift); }
+/* Card photos are CSS backgrounds so each one is embedded once, however many role tabs reuse it. */
+.th-card-img { display: block; width: 100%; aspect-ratio: 5 / 4; background: var(--th-accent-soft) 50% 50% / cover no-repeat; }
+.th-card-img.is-learning-paths { background-image: url("images/learning-paths.jpg"); }
+.th-card-img.is-learning-hub { background-image: url("images/learning-hub.jpg"); }
+.th-card-img.is-career-development { background-image: url("images/career-development.jpg"); }
+.th-card-img.is-employee-support { background-image: url("images/employee-support.jpg"); }
+.th-card-body { display: grid; gap: 6px; padding: 16px 18px 22px; }
+.th-card h3 { font: 700 17px/1.3 var(--th-font); color: var(--th-navy); }
+.th-card p { font-size: 13.5px; line-height: 1.5; color: var(--th-muted); }
+
+/* ---------- Bookmarks + Feedback ---------- */
+.th-lower { padding-block: 8px 80px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 48px 80px; align-items: start; }
+.th-bm-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 22px; }
+.th-bm-item { position: relative; min-width: 0; }
+.th-bm, .th-bm-toggle {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; height: 56px;
+  padding: 0 18px;
+  border: 0; border-radius: 8px;
+  background: var(--th-surface);
+  box-shadow: var(--th-shadow);
+  color: var(--th-navy);
+  font: 700 16px/1.2 var(--th-font);
+  text-align: left;
+  text-decoration: none;
+  transition: transform 160ms var(--th-ease), box-shadow 160ms var(--th-ease);
+}
+.th-bm span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.th-bm:hover, .th-bm-toggle:hover { transform: translateY(-2px); box-shadow: var(--th-shadow-lift); }
+.th-bm .th-ic, .th-bm-toggle .th-ic { width: 22px; height: 22px; stroke-width: 2.1; }
+.th-bm-toggle[aria-expanded="true"] { background: var(--th-navy); color: var(--th-on-dark); }
+.th-bm-x {
+  position: absolute; top: -8px; right: -8px;
+  display: none; place-items: center;
+  width: 28px; height: 28px;
+  border: 2px solid var(--th-surface); border-radius: 50%;
+  background: var(--th-alert);
+  color: var(--th-on-dark);
+}
+.th-bm-x .th-ic { width: 14px; height: 14px; stroke-width: 2.4; }
+.th-bookmarks.is-editing .th-bm-x { display: grid; }
+.th-bm-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto; gap: 10px; margin-top: 16px; padding: 14px; border-radius: 10px; background: var(--th-surface); box-shadow: var(--th-shadow); }
+.th-bm-form label { display: grid; gap: 4px; font-size: 12.5px; font-weight: 500; color: var(--th-muted); }
+.th-bm-form input { height: 38px; padding: 0 10px; border: 1px solid var(--th-field); border-radius: 6px; background: var(--th-surface); color: var(--th-ink); font-size: 14px; }
+.th-bm-form .th-btn { align-self: end; }
+.th-bm-hint { grid-column: 1 / -1; font-size: 12.5px; color: var(--th-muted); }
+
+.th-fb { display: grid; gap: 12px; }
+.th-fb textarea {
+  width: 100%;
+  min-height: 92px;
+  padding: 10px 12px;
+  border: 1px solid var(--th-field);
+  border-radius: 6px;
+  background: var(--th-surface);
+  color: var(--th-ink);
+  font-size: 14px; line-height: 1.5;
+  resize: vertical;
+}
+.th-fb textarea::placeholder { color: var(--th-muted); }
+.th-fb-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; }
+.th-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 36px; padding: 0 18px;
+  border: 0; border-radius: 6px;
+  background: var(--th-navy);
+  color: var(--th-on-dark);
+  font: 700 14px/1 var(--th-font);
+  transition: background 140ms var(--th-ease);
+}
+.th-btn:hover { background: var(--th-navy-2); }
+.th-btn:disabled { opacity: 0.6; cursor: progress; }
+.th-btn.is-quiet { background: var(--th-accent-soft); color: var(--th-navy); }
+.th-fb-msg { font-size: 13px; color: var(--th-muted); }
+.th-fb-msg.is-error { color: var(--th-alert); }
+
+/* ---------- Footer ---------- */
+.th-foot { background: var(--th-foot); color: var(--th-foot-text); font-size: 13px; }
+.th-foot .th-wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 24px; padding-block: 16px; }
+.th-foot a { color: var(--th-on-dark); text-underline-offset: 3px; }
+
+/* ---------- Toast ---------- */
+.th-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 50;
+  max-width: min(92vw, 460px);
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--th-ink);
+  color: var(--th-on-dark);
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.5);
+  transform: translate(-50%, 16px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 180ms var(--th-ease), transform 180ms var(--th-ease), visibility 0s linear 180ms;
+}
+.th-toast.is-on { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition-delay: 0s; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1400px) {
+  .th-deco-line { display: none; }
+}
+@media (max-width: 1180px) {
+  .th-hero-in { grid-template-columns: minmax(0, 1fr) minmax(0, 300px); }
+  .th-tiles { max-width: 600px; }
+  .th-tiles ul { grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 20px; }
+  .th-tiles ul::before { display: none; }
+  .th-deco-orb, .th-deco-dots.is-left { display: none; }
+}
+@media (max-width: 1100px) {
+  .th-main { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 1000px) {
+  .th-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .th-lower { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+  .th-hero-in { grid-template-columns: minmax(0, 1fr); padding-top: 40px; }
+  .th-tiles { max-width: none; }
+  .th-hero-photo { display: none; }
+  .th-search::after { display: none; }
+}
+@media (max-width: 720px) {
+  .th-tiles { padding-block: 28px 32px; }
+  .th-deco-dots.is-right { display: none; }
+  .th-tile-box { width: min(64px, 100%); border-radius: 14px; }
+  .th-tile-ic { width: 40px; height: 40px; }
+  .th-tile-ic .th-ic { width: 20px; height: 20px; }
+  .th-tile-label { margin-inline: 0; font-size: 11px; }
+  .th-main { padding-block: 40px 32px; }
+  .th-golive { grid-template-columns: minmax(0, 1fr); padding: 18px; }
+  .th-countdown { justify-items: start; grid-auto-flow: column; align-items: baseline; gap: 8px; min-width: 0; justify-self: start; }
+  .th-countdown b { font-size: 34px; }
+  .th-tl-detail { grid-template-columns: auto minmax(0, 1fr); }
+  .th-tl-detail .th-pill { grid-column: 2; justify-self: start; }
+  .th-bm-form { grid-template-columns: minmax(0, 1fr); }
+}
+/* Phones: the roadmap turns into a vertical list */
+@media (max-width: 640px) {
+  .th-tl { min-width: 0; padding-inline: 0; }
+  .th-tl-rail { display: none; }
+  .th-tl-track { display: block; }
+  .th-ms { z-index: 0; }
+  .th-ms::before {
+    content: "";
+    position: absolute;
+    left: 20.5px; top: 50%;
+    width: 3px; height: 100%;
+    background: var(--th-accent-soft);
+    z-index: -1;
+  }
+  .th-ms:last-child::before { display: none; }
+  .th-ms.is-done::before { background: var(--th-accent); }
+  .th-ms-btn { grid-template-columns: 44px minmax(0, 1fr); grid-template-rows: auto; column-gap: 10px; align-items: center; padding-block: 5px; text-align: left; }
+  .th-ms-dot { grid-row: 1; grid-column: 1; }
+  .th-ms-label, .th-ms:nth-child(even) .th-ms-label { grid-row: 1; grid-column: 2; align-self: center; justify-self: stretch; width: auto; margin-left: 0; }
+  .th-cards { gap: 14px; }
+  .th-card-body { padding: 12px 12px 16px; }
+  .th-card h3 { font-size: 15.5px; }
+  .th-card p { font-size: 13px; }
+  .th-bm-list { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 340px) {
+  .th-cards { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .th *, .th *::before, .th *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="th" id="th-root" lang="en">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="th-i-cap" viewBox="0 0 24 24"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.6V16c0 1.4 2.5 3 5.5 3s5.5-1.6 5.5-3v-4.4"/><path d="M21.5 9.5V15"/></symbol>
+  <symbol id="th-i-headset" viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><path d="M4 14h3v5H5.5A1.5 1.5 0 0 1 4 17.5z"/><path d="M20 14h-3v5h1.5a1.5 1.5 0 0 0 1.5-1.5z"/><path d="M18.5 19c0 1.4-1.6 2-4 2H13"/></symbol>
+  <symbol id="th-i-academy" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/><path d="M8 9.3 12 7.5l4 1.8-4 1.8z"/><path d="M10 10.4v1.4c0 .5.9 1 2 1s2-.5 2-1v-1.4"/></symbol>
+  <symbol id="th-i-steps" viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="16.5" rx="1.5"/><path d="M9 3h6v3H9z"/><path d="M8.5 11h1M11.5 11h4M8.5 15h1M11.5 15h4"/></symbol>
+  <symbol id="th-i-bolt" viewBox="0 0 24 24"><path d="M14 3H7a1.5 1.5 0 0 0-1.5 1.5v15A1.5 1.5 0 0 0 7 21h10a1.5 1.5 0 0 0 1.5-1.5V7.5z"/><path d="M14 3v4.5h4.5"/><path d="m12.5 10-2.5 4h4l-2.5 4"/></symbol>
+  <symbol id="th-i-megaphone" viewBox="0 0 24 24"><path d="M3.5 10.5v3a1 1 0 0 0 1 1H7l6 4.5v-14L7 9.5H4.5a1 1 0 0 0-1 1z"/><path d="M16.5 9a4 4 0 0 1 0 6"/><path d="M19 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+  <symbol id="th-i-sheet" viewBox="0 0 24 24"><path d="M14 3H7a1.5 1.5 0 0 0-1.5 1.5v15A1.5 1.5 0 0 0 7 21h10a1.5 1.5 0 0 0 1.5-1.5V7.5z"/><path d="M14 3v4.5h4.5"/><rect x="8.5" y="11" width="7" height="6.5" rx=".5"/><path d="M8.5 14.25h7M12 11v6.5"/></symbol>
+  <symbol id="th-i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5.5a4 4 0 0 1-8 0z"/><path d="M8 6H5.5A2.5 2.5 0 0 0 8 10.5"/><path d="M16 6h2.5A2.5 2.5 0 0 1 16 10.5"/><path d="M12 13.5V17M9 20.5h6M10 17h4v3.5h-4z"/></symbol>
+  <symbol id="th-i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10.2 8.7v6.6l5.2-3.3z"/></symbol>
+  <symbol id="th-i-sparkle" viewBox="0 0 24 24"><path d="M11 4.5 12.6 9l4.4 1.6-4.4 1.6L11 16.7l-1.6-4.5L5 10.6 9.4 9z"/><path d="M18 3.5v3M16.5 5h3M18 15.5v3M16.5 17h3"/></symbol>
+  <symbol id="th-i-send" viewBox="0 0 24 24"><path d="M4.5 12 20 4.5 15.5 20l-3-6.5z"/><path d="m12.5 13.5 3-3"/></symbol>
+  <symbol id="th-i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+  <symbol id="th-i-check" viewBox="0 0 24 24"><path d="m5.5 12.5 4 4 9-9"/></symbol>
+  <symbol id="th-i-flag" viewBox="0 0 24 24"><path d="M6 21V4"/><path d="M6 4.5h11l-2.2 4 2.2 4H6"/></symbol>
+  <symbol id="th-i-calendar" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14.5" rx="1.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></symbol>
+  <symbol id="th-i-rocket" viewBox="0 0 24 24"><path d="M13.5 16.5 7.5 10.5C9.6 6 13.5 3.6 19.8 4.2c.6 6.3-1.8 10.2-6.3 12.3z"/><path d="M7.5 10.5H4.5l2.2-3.3h4"/><path d="M13.5 16.5v3l3.3-2.2v-4"/><circle cx="15" cy="9" r="1.4"/><path d="M6.8 15.2c-1.3.5-2.3 2.2-2.3 4.3 2.1 0 3.8-1 4.3-2.3"/></symbol>
+  <symbol id="th-i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="th-i-briefcase" viewBox="0 0 24 24"><rect x="3.5" y="7.5" width="17" height="12" rx="1.5"/><path d="M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5"/><path d="M3.5 12.5h17"/></symbol>
+  <symbol id="th-i-buoy" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="m6 6 3.5 3.5M14.5 14.5 18 18M18 6l-3.5 3.5M9.5 14.5 6 18"/></symbol>
+  <symbol id="th-i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+</svg>
+
+<!-- ============ HERO ============ -->
+<header class="th-hero" aria-labelledby="th-greeting">
+  <div class="th-deco th-deco-arc" aria-hidden="true"></div>
+  <div class="th-deco th-deco-orb" aria-hidden="true"></div>
+  <div class="th-deco th-deco-dots is-left" aria-hidden="true"></div>
+  <div class="th-deco th-deco-dots is-right" aria-hidden="true"></div>
+  <svg class="th-deco th-deco-line" viewBox="0 0 100 320" aria-hidden="true" focusable="false">
+    <path d="M100 0C42 40 30 140 30 296" fill="none" stroke="currentColor" stroke-width="2"/>
+    <circle cx="30" cy="304" r="7" fill="#ffffff" stroke="currentColor" stroke-width="3.5"/>
+  </svg>
+
+  <div class="th-wrap th-hero-in">
+    <div class="th-hero-copy">
+      <span class="th-badge"><svg class="th-ic" aria-hidden="true"><use href="#th-i-cap"/></svg>Training Hub</span>
+      <h1 class="th-h1" id="th-greeting">How can I help you today?</h1>
+      <p class="th-lede">Welcome to the Training Hub. This is your central place for training, resources, and tools.</p>
+      <div class="th-search" role="search" data-th-search>
+        <svg class="th-ic" aria-hidden="true"><use href="#th-i-sparkle"/></svg>
+        <label class="th-sr" for="th-search-q">Search training resources</label>
+        <input id="th-search-q" type="search" placeholder="Search training resources, guides and more…" autocomplete="off" enterkeyhint="search">
+        <button class="th-icon-btn" type="button" aria-label="Search" data-th-search-go><svg class="th-ic" aria-hidden="true"><use href="#th-i-send"/></svg></button>
+        <button class="th-icon-btn th-search-clear" type="button" aria-label="Clear search" data-th-search-clear><svg class="th-ic" aria-hidden="true"><use href="#th-i-x"/></svg></button>
+      </div>
+    </div>
+
+    <figure class="th-hero-photo">
+      <img src="images/hero.jpg" alt="" width="760" height="880" fetchpriority="high">
+      <div class="th-hero-sign" aria-hidden="true"><svg class="th-ic"><use href="#th-i-cap"/></svg><span>Training<br>Hub</span></div>
+    </figure>
+
+    <!-- QUICK LINKS: replace each href="#" with the page or library it opens. data-tone: (blank) | warm | green -->
+    <nav class="th-tiles" aria-label="Quick links">
+      <ul>
+        <li><a class="th-tile" href="#"><span class="th-tile-box"><span class="th-tile-ic"><svg class="th-ic" aria-hidden="true"><use href="#th-i-headset"/></svg></span></span><span class="th-tile-label">Support</span></a></li>
+        <li><a class="th-tile" href="#" data-tone="green"><span class="th-tile-box"><span class="th-tile-ic"><svg class="th-ic" aria-hidden="true"><use href="#th-i-academy"/></svg></span></span><span class="th-tile-label">WiseTech<br>Academy</span></a></li>
+        <li><a class="th-tile" href="#"><span class="th-tile-box"><span class="th-tile-ic"><svg class="th-ic" aria-hidden="true"><use href="#th-i-steps"/></svg></span></span><span class="th-tile-label">Procedure<br>Guides</span></a></li>
+        <li><a class="th-tile" href="#"><span class="th-tile-box"><span class="th-tile-ic"><svg class="th-ic" aria-hidden="true"><use href="#th-i-bolt"/></svg></span></span><span class="th-tile-label">Quick Reference<br>Guides</span></a></li>
+        <li><a class="th-tile" href="#" data-tone="warm"><span class="th-tile-box"><span class="th-tile-ic"><svg class="th-ic" aria-hidden="true"><use href="#th-i-megaphone"/></svg></span></span><span class="th-tile-label">Communications</span></a></li>
+        <li><a class="th-tile" href="#"><span class="th-tile-box"><span class="th-tile-ic"><svg class="th-ic" aria-hidden="true"><use href="#th-i-sheet"/></svg></span></span><span class="th-tile-label">D365<br>Templates</span></a></li>
+        <li><a class="th-tile" href="#"><span class="th-tile-box"><span class="th-tile-ic"><svg class="th-ic" aria-hidden="true"><use href="#th-i-trophy"/></svg></span></span><span class="th-tile-label">Success<br>Stories</span></a></li>
+        <li><a class="th-tile" href="#" data-tone="warm"><span class="th-tile-box"><span class="th-tile-ic"><svg class="th-ic" aria-hidden="true"><use href="#th-i-play"/></svg></span></span><span class="th-tile-label">Recordings</span></a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="th-wrap th-main">
+
+  <!-- ============ TIMELINE ============ -->
+  <section aria-labelledby="th-tl-title">
+    <div class="th-sec-head">
+      <h2 class="th-h2" id="th-tl-title">Project Timeline</h2>
+      <ul class="th-legend" aria-label="Legend">
+        <li><span class="th-key is-done" aria-hidden="true"></span>Completed</li>
+        <li><span class="th-key is-next" aria-hidden="true"></span>Up next</li>
+        <li><span class="th-key" aria-hidden="true"></span>Planned</li>
+        <li><span class="th-key is-golive" aria-hidden="true"></span>Go-live</li>
+        <li><span class="th-key is-today" aria-hidden="true"></span><span data-th-today>Today, 23 Oct</span></li>
+      </ul>
+    </div>
+
+    <div class="th-tl-card">
+      <div class="th-golive" data-th-golive>
+        <div>
+          <p class="th-golive-eyebrow"><svg class="th-ic" aria-hidden="true"><use href="#th-i-rocket"/></svg><span data-th-gl-eyebrow>Next go-live</span></p>
+          <h3 data-th-gl-title>Wave 2 go-live</h3>
+          <p class="th-golive-when" data-th-gl-when>D365 Finance &amp; Operations · Monday 1 February 2027</p>
+          <div class="th-golive-progress">
+            <span data-th-gl-done>4 of 9 milestones complete</span>
+            <div class="th-bar" aria-hidden="true"><i data-th-gl-bar style="--done: 44%"></i></div>
+          </div>
+        </div>
+        <p class="th-countdown"><b data-th-gl-days>101</b><span data-th-gl-unit>days to go</span></p>
+      </div>
+
+      <!-- TIMELINE: one <li> per milestone, oldest first.
+           data-date = YYYY-MM-DD. data-kind = milestone | event | golive.
+           data-scope (go-lives only) shows under the title in the spotlight.
+           The hidden <p class="th-ms-note"> is the description shown when someone selects the milestone.
+           Completed / Up next / Planned, the countdown and the progress line all come from today's date. -->
+      <div class="th-tl-scroll">
+        <div class="th-tl" data-th-timeline style="--n: 9; --progress: 0.4554">
+          <div class="th-tl-rail" aria-hidden="true"><span class="th-tl-fill"></span><span class="th-tl-today"><span class="th-sr">Today</span></span></div>
+          <ol class="th-tl-track" aria-label="Project milestones">
+            <li class="th-ms is-done" data-date="2026-06-02" data-kind="milestone">
+              <button class="th-ms-btn" type="button" aria-pressed="false" aria-controls="th-tl-detail"><span class="th-ms-dot"><svg class="th-ic" aria-hidden="true"><use href="#th-i-check"/></svg></span><span class="th-ms-label"><time datetime="2026-06-02">02 Jun 2026</time><strong>Project kickoff</strong><span class="th-sr th-ms-state">Completed</span></span></button>
+              <p class="th-ms-note" hidden>The steering committee approved the scope, the plan and the two-wave rollout.</p>
+            </li>
+            <li class="th-ms is-done" data-date="2026-07-14" data-kind="milestone">
+              <button class="th-ms-btn" type="button" aria-pressed="false" aria-controls="th-tl-detail"><span class="th-ms-dot"><svg class="th-ic" aria-hidden="true"><use href="#th-i-check"/></svg></span><span class="th-ms-label"><time datetime="2026-07-14">14 Jul 2026</time><strong>Solution design signed off</strong><span class="th-sr th-ms-state">Completed</span></span></button>
+              <p class="th-ms-note" hidden>Process owners signed off the future-state design for every process area.</p>
+            </li>
+            <li class="th-ms is-done" data-date="2026-09-07" data-kind="golive" data-scope="D365 Finance &amp; Operations">
+              <button class="th-ms-btn" type="button" aria-pressed="false" aria-controls="th-tl-detail"><span class="th-ms-dot"><svg class="th-ic" aria-hidden="true"><use href="#th-i-rocket"/></svg></span><span class="th-ms-label"><time datetime="2026-09-07">07 Sep 2026</time><strong>Wave 1 go-live</strong><span class="th-sr th-ms-state">Completed</span></span></button>
+              <p class="th-ms-note" hidden>D365 Finance &amp; Operations went live for Wave 1. Hypercare support ran for four weeks.</p>
+            </li>
+            <li class="th-ms is-done" data-date="2026-10-05" data-kind="event">
+              <button class="th-ms-btn" type="button" aria-pressed="false" aria-controls="th-tl-detail"><span class="th-ms-dot"><svg class="th-ic" aria-hidden="true"><use href="#th-i-check"/></svg></span><span class="th-ms-label"><time datetime="2026-10-05">05 Oct 2026</time><strong>Training Hub launch</strong><span class="th-sr th-ms-state">Completed</span></span></button>
+              <p class="th-ms-note" hidden>This hub went live with procedure guides, quick reference guides and recordings for Wave 1 processes.</p>
+            </li>
+            <li class="th-ms is-next" data-date="2026-11-02" data-kind="milestone">
+              <button class="th-ms-btn" type="button" aria-pressed="true" aria-controls="th-tl-detail"><span class="th-ms-dot"><svg class="th-ic" aria-hidden="true"><use href="#th-i-flag"/></svg></span><span class="th-ms-label"><time datetime="2026-11-02">02 Nov 2026</time><strong>Wave 2 UAT starts</strong><span class="th-sr th-ms-state">Up next</span></span></button>
+              <p class="th-ms-note" hidden>Business testers run end-to-end scenarios in the UAT environment and log defects for the project team.</p>
+            </li>
+            <li class="th-ms is-planned" data-date="2026-11-30" data-kind="event">
+              <button class="th-ms-btn" type="button" aria-pressed="false" aria-controls="th-tl-detail"><span class="th-ms-dot"><svg class="th-ic" aria-hidden="true"><use href="#th-i-calendar"/></svg></span><span class="th-ms-label"><time datetime="2026-11-30">30 Nov 2026</time><strong>End-user training opens</strong><span class="th-sr th-ms-state">Planned</span></span></button>
+              <p class="th-ms-note" hidden>Role-based sessions open for booking in WiseTech Academy. Session recordings follow in Recordings.</p>
+            </li>
+            <li class="th-ms is-planned" data-date="2026-12-11" data-kind="milestone">
+              <button class="th-ms-btn" type="button" aria-pressed="false" aria-controls="th-tl-detail"><span class="th-ms-dot"><svg class="th-ic" aria-hidden="true"><use href="#th-i-flag"/></svg></span><span class="th-ms-label"><time datetime="2026-12-11">11 Dec 2026</time><strong>Change freeze</strong><span class="th-sr th-ms-state">Planned</span></span></button>
+              <p class="th-ms-note" hidden>No configuration changes from this date until Wave 2 is live, apart from approved fixes.</p>
+            </li>
+            <li class="th-ms is-planned" data-date="2027-02-01" data-kind="golive" data-scope="D365 Finance &amp; Operations">
+              <button class="th-ms-btn" type="button" aria-pressed="false" aria-controls="th-tl-detail"><span class="th-ms-dot"><svg class="th-ic" aria-hidden="true"><use href="#th-i-rocket"/></svg></span><span class="th-ms-label"><time datetime="2027-02-01">01 Feb 2027</time><strong>Wave 2 go-live</strong><span class="th-sr th-ms-state">Planned</span></span></button>
+              <p class="th-ms-note" hidden>D365 Finance &amp; Operations goes live for Wave 2. Cutover runs over the weekend of 30 and 31 January.</p>
+            </li>
+            <li class="th-ms is-planned" data-date="2027-03-01" data-kind="milestone">
+              <button class="th-ms-btn" type="button" aria-pressed="false" aria-controls="th-tl-detail"><span class="th-ms-dot"><svg class="th-ic" aria-hidden="true"><use href="#th-i-flag"/></svg></span><span class="th-ms-label"><time datetime="2027-03-01">01 Mar 2027</time><strong>Hypercare ends</strong><span class="th-sr th-ms-state">Planned</span></span></button>
+              <p class="th-ms-note" hidden>Support moves from the project team to the usual support channels.</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="th-tl-detail" id="th-tl-detail" aria-live="polite" data-th-detail>
+        <p class="th-tl-date"><b data-th-d-day>02</b><span data-th-d-mon>Nov</span></p>
+        <div class="th-tl-body">
+          <p class="th-tl-kind" data-th-d-kind>Milestone · Monday 2 November 2026</p>
+          <h3 data-th-d-title>Wave 2 UAT starts</h3>
+          <p data-th-d-note>Business testers run end-to-end scenarios in the UAT environment and log defects for the project team.</p>
+        </div>
+        <span class="th-pill" data-th-d-state>Up next · in 10 days</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ACTION REQUIRED ============ -->
+  <!-- data-due = YYYY-MM-DD. Items turn pink when due within SETTINGS.urgentWithinDays, and show Overdue after the date. -->
+  <section aria-labelledby="th-act-title">
+    <div class="th-sec-head">
+      <h2 class="th-h2 is-alert" id="th-act-title">Action Required</h2>
+    </div>
+    <ul class="th-act-list">
+      <li class="th-act is-urgent" data-due="2026-10-27"><a href="#"><strong>Information Security &amp; Data Privacy</strong><span class="th-act-due">Due date: 27/10/2026<span class="th-act-flag"><span aria-hidden="true">!</span><span class="th-sr">Due soon</span></span></span></a></li>
+      <li class="th-act" data-due="2026-11-30"><a href="#"><strong>Anti-Bribery and Corruption (ABC)</strong><span class="th-act-due">Due date: 30/11/2026<span class="th-act-flag" hidden></span></span></a></li>
+      <li class="th-act" data-due="2026-11-30"><a href="#"><strong>Cybersecurity Awareness</strong><span class="th-act-due">Due date: 30/11/2026<span class="th-act-flag" hidden></span></span></a></li>
+    </ul>
+  </section>
+</div>
+
+<!-- ============ RESOURCES FOR YOUR ROLE ============ -->
+<section class="th-wrap th-res" aria-labelledby="th-res-title" data-th-roles>
+  <h2 class="th-res-title" id="th-res-title">Resources for your role</h2>
+  <div class="th-tabs" role="tablist" aria-label="Role">
+    <button class="th-tab" type="button" role="tab" id="th-tab-all" aria-controls="th-role-all" aria-selected="true">All Employees</button>
+    <button class="th-tab" type="button" role="tab" id="th-tab-assoc" aria-controls="th-role-assoc" aria-selected="false" tabindex="-1">Associates</button>
+    <button class="th-tab" type="button" role="tab" id="th-tab-mgr" aria-controls="th-role-mgr" aria-selected="false" tabindex="-1">Manager</button>
+    <button class="th-tab" type="button" role="tab" id="th-tab-snr" aria-controls="th-role-snr" aria-selected="false" tabindex="-1">Senior Manager</button>
+  </div>
+
+  <!-- ROLE CARDS: four cards per role. Replace href="#". Photos: the th-card-img classes near the end of the styles. -->
+  <div class="th-cards" role="tabpanel" id="th-role-all" aria-labelledby="th-tab-all">
+    <a class="th-card" href="#"><span class="th-card-img is-learning-paths" aria-hidden="true"></span><div class="th-card-body"><h3>Learning Paths</h3><p>Structured training programs designed to build skills and support career growth.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-hub" aria-hidden="true"></span><div class="th-card-body"><h3>Learning Hub</h3><p>Access courses, learning materials, certifications, and development resources.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-career-development" aria-hidden="true"></span><div class="th-card-body"><h3>Career Development</h3><p>Explore opportunities, build professional skills, and support long-term career advancement.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-employee-support" aria-hidden="true"></span><div class="th-card-body"><h3>Employee Support</h3><p>Find workplace resources, guidance, policies, and support for everyday needs.</p></div></a>
+  </div>
+  <div class="th-cards" role="tabpanel" id="th-role-assoc" aria-labelledby="th-tab-assoc" hidden>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-paths" aria-hidden="true"></span><div class="th-card-body"><h3>Getting Started</h3><p>Your first steps in D365: access, navigation and the basics of your process area.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-hub" aria-hidden="true"></span><div class="th-card-body"><h3>Everyday Tasks</h3><p>Procedure guides and quick reference guides for the tasks you do every day.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-employee-support" aria-hidden="true"></span><div class="th-card-body"><h3>Session Recordings</h3><p>Watch past training sessions at your own pace, chaptered by task.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-career-development" aria-hidden="true"></span><div class="th-card-body"><h3>Get Help</h3><p>Who to ask, where to raise a ticket, and when the next drop-in session runs.</p></div></a>
+  </div>
+  <div class="th-cards" role="tabpanel" id="th-role-mgr" aria-labelledby="th-tab-mgr" hidden>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-paths" aria-hidden="true"></span><div class="th-card-body"><h3>Approvals &amp; Workflow</h3><p>Approve invoices, expenses and purchase requests correctly and on time.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-hub" aria-hidden="true"></span><div class="th-card-body"><h3>Team Training Status</h3><p>See which mandatory training is due across your team.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-career-development" aria-hidden="true"></span><div class="th-card-body"><h3>Leading Through Change</h3><p>Help your team prepare for go-live and settle into new processes.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-employee-support" aria-hidden="true"></span><div class="th-card-body"><h3>Coaching Your Team</h3><p>Guides for running team huddles, check-ins and on-the-job coaching.</p></div></a>
+  </div>
+  <div class="th-cards" role="tabpanel" id="th-role-snr" aria-labelledby="th-tab-snr" hidden>
+    <a class="th-card" href="#"><span class="th-card-img is-employee-support" aria-hidden="true"></span><div class="th-card-body"><h3>Go-live Readiness</h3><p>Readiness checkpoints, decisions and sign-offs for each wave.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-hub" aria-hidden="true"></span><div class="th-card-body"><h3>Adoption Insights</h3><p>Training completion and adoption across your teams.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-career-development" aria-hidden="true"></span><div class="th-card-body"><h3>Leadership Messages</h3><p>Key messages and talking points to share with your teams.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-paths" aria-hidden="true"></span><div class="th-card-body"><h3>Career Development</h3><p>Grow your leaders and plan development across your organisation.</p></div></a>
+  </div>
+</section>
+
+<!-- ============ BOOKMARKS + FEEDBACK ============ -->
+<div class="th-wrap th-lower">
+  <section class="th-bookmarks" aria-labelledby="th-bm-title" data-th-bookmarks>
+    <div class="th-sec-head"><h2 class="th-h2" id="th-bm-title">My Training Bookmarks</h2></div>
+    <!-- BOOKMARKS: default set. Icons: cap | briefcase | buoy | link. People can add and remove their own;
+         SharePoint HTML pages have no browser storage, so those changes last until they leave the page. -->
+    <ul class="th-bm-list">
+      <li class="th-bm-item is-fixed"><button class="th-bm-toggle" type="button" aria-expanded="false" aria-controls="th-bm-form" data-th-bm-toggle><svg class="th-ic" aria-hidden="true"><use href="#th-i-plus"/></svg>Add/ Remove</button></li>
+      <li class="th-bm-item"><a class="th-bm" href="#"><svg class="th-ic" aria-hidden="true"><use href="#th-i-cap"/></svg><span>Training</span></a></li>
+      <li class="th-bm-item"><a class="th-bm" href="#"><svg class="th-ic" aria-hidden="true"><use href="#th-i-briefcase"/></svg><span>Program</span></a></li>
+      <li class="th-bm-item"><a class="th-bm" href="#"><svg class="th-ic" aria-hidden="true"><use href="#th-i-buoy"/></svg><span>IT Helpdesk</span></a></li>
+    </ul>
+    <div class="th-bm-form" id="th-bm-form" role="group" aria-label="Add a bookmark" hidden>
+      <label for="th-bm-name">Name<input id="th-bm-name" maxlength="40" autocomplete="off"></label>
+      <label for="th-bm-url">Link<input id="th-bm-url" type="url" placeholder="https://" autocomplete="off"></label>
+      <button class="th-btn" type="button" data-th-bm-add>Add</button>
+      <p class="th-bm-hint" data-th-bm-hint>Remove a bookmark with its red button.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="th-fb-title">
+    <div class="th-sec-head"><h2 class="th-h2" id="th-fb-title">Feedback</h2></div>
+    <div class="th-fb" data-th-feedback>
+      <label class="th-sr" for="th-fb-text">Your feedback</label>
+      <textarea id="th-fb-text" maxlength="1000" placeholder="Let us know how we can improve our training program!"></textarea>
+      <div class="th-fb-row">
+        <button class="th-btn" type="button" data-th-fb-send>Submit</button>
+        <p class="th-fb-msg" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+</div>
+</main>
+
+<footer class="th-foot">
+  <div class="th-wrap">
+    <span>Copyright © <span data-th-year>2026</span> WiseTech Global</span>
+    <span>Intranet contact: <a href="#">D365 Training team</a></span>
+  </div>
+</footer>
+
+<div class="th-toast" role="status" aria-live="polite"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* =====================================================================
+     SETTINGS: set these once before uploading the page to SharePoint
+     ===================================================================== */
+  var SETTINGS = {
+    // Full URL of the Training Hub site, with no trailing slash. Hero search opens this site's search results.
+    siteUrl: "https://YOUR-TENANT.sharepoint.com/sites/TrainingHub",
+
+    // Where links open. "_top" replaces the whole SharePoint page; "_blank" opens a new tab.
+    // If links do nothing after upload, switch this to "_blank".
+    linkTarget: "_top",
+
+    // Microsoft Forms link that Feedback's Submit button opens in a new tab. To carry the typed text across,
+    // use the form's pre-filled link with FEEDBACK as the answer to the feedback question.
+    feedbackForm: "",
+
+    // Action Required items turn pink this many days before they are due
+    urgentWithinDays: 7,
+
+    // "YYYY-MM-DD" shows the timeline and due dates as of another day (leave empty for today)
+    today: ""
+  };
+  var SEARCH_PATH = "/_layouts/15/search.aspx/siteall?q=";
+
+  var root = document.getElementById("th-root");
+  if (!root) return;
+
+  function $(sel, el) { return (el || root).querySelector(sel); }
+  function $$(sel, el) { return Array.prototype.slice.call((el || root).querySelectorAll(sel)); }
+
+  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var MONTHS_LONG = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  var WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+  function parseDate(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || "");
+    return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+  }
+  function longDate(d) { return WEEKDAYS[d.getDay()] + " " + d.getDate() + " " + MONTHS_LONG[d.getMonth()] + " " + d.getFullYear(); }
+  function daysBetween(a, b) { return Math.round((b - a) / 864e5); }
+  var today = parseDate(SETTINGS.today) || (function () { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); })();
+
+  function openUrl(url, target) {
+    var w = window.open(url, target);
+    if (!w) toast("The link was blocked. Set linkTarget to “_blank” in SETTINGS.");
+    return w;
+  }
+  function setTarget(a) {
+    a.target = SETTINGS.linkTarget;
+    if (SETTINGS.linkTarget === "_blank") a.rel = "noopener";
+  }
+
+  /* ---------- Toast ---------- */
+  var toastEl = $(".th-toast"), toastTimer;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("is-on");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("is-on"); }, 3600);
+  }
+
+  /* ---------- Links ---------- */
+  // SharePoint shows the page in a frame: send real links to the whole page (or a new tab).
+  $$("a[href]").forEach(function (a) { if (a.getAttribute("href").charAt(0) !== "#") setTarget(a); });
+  root.addEventListener("click", function (e) {
+    var a = e.target.closest ? e.target.closest('a[href="#"]') : null;
+    if (!a || !root.contains(a)) return;
+    e.preventDefault();
+    var el = a.querySelector(".th-tile-label") || a.querySelector("h3") || a.querySelector("strong") || a;
+    var label = (el.innerText || el.textContent).replace(/\s+/g, " ").trim();
+    toast("Add the SharePoint link for “" + label + "” in the page source.");
+  });
+  var year = $("[data-th-year]");
+  if (year) year.textContent = String(new Date().getFullYear());
+
+  /* ---------- Search ---------- */
+  // No <form>: SharePoint's sandbox blocks form submission, so Enter and the button run the search.
+  (function () {
+    var box = $("[data-th-search]");
+    if (!box) return;
+    var input = box.querySelector("input");
+    function search() {
+      var q = input.value.trim();
+      if (!q) { input.focus(); return; }
+      if (/YOUR-TENANT/.test(SETTINGS.siteUrl)) { toast("Set siteUrl in SETTINGS to search “" + q + "” on the site."); return; }
+      openUrl(SETTINGS.siteUrl.replace(/\/+$/, "") + SEARCH_PATH + encodeURIComponent(q), SETTINGS.linkTarget);
+    }
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); search(); } });
+    $("[data-th-search-go]", box).addEventListener("click", search);
+    $("[data-th-search-clear]", box).addEventListener("click", function () { input.value = ""; input.focus(); });
+  })();
+
+  /* ---------- Timeline ---------- */
+  (function () {
+    var tl = $("[data-th-timeline]");
+    if (!tl) return;
+    var KIND = { milestone: "Milestone", event: "Event", golive: "Go-live" };
+    var items = $$(".th-ms", tl).map(function (li) {
+      var note = $(".th-ms-note", li);
+      return {
+        li: li,
+        btn: $(".th-ms-btn", li),
+        use: $(".th-ms-dot use", li),
+        dot: $(".th-ms-dot", li),
+        state: $(".th-ms-state", li),
+        date: parseDate(li.getAttribute("data-date")),
+        kind: KIND[li.getAttribute("data-kind")] ? li.getAttribute("data-kind") : "milestone",
+        scope: li.getAttribute("data-scope") || "",
+        title: $(".th-ms-label strong", li).textContent.trim(),
+        note: note ? note.textContent.trim() : ""
+      };
+    }).filter(function (m) { return m.date; });
+    var n = items.length;
+    if (!n) return;
+    tl.style.setProperty("--n", n);
+
+    function stateLabel(m) {
+      if (m.status === "done") return "Completed";
+      if (m.days === 0) return "Today";
+      if (m.days === 1) return m.status === "next" ? "Up next · tomorrow" : "Tomorrow";
+      return (m.status === "next" ? "Up next · in " : "In ") + m.days + " days";
+    }
+
+    var next = -1;
+    items.forEach(function (m, i) {
+      m.days = daysBetween(today, m.date);
+      if (m.days < 0) m.status = "done";
+      else if (next === -1) { next = i; m.status = "next"; }
+      else m.status = "planned";
+      m.li.classList.remove("is-done", "is-next", "is-planned");
+      m.li.classList.add("is-" + m.status);
+      var icon = m.kind === "golive" ? "rocket" : m.status === "done" ? "check" : m.kind === "event" ? "calendar" : "flag";
+      if (m.use) m.use.setAttribute("href", "#th-i-" + icon);
+      if (m.state) m.state.textContent = m.status === "done" ? "Completed" : m.status === "next" ? "Up next" : "Planned";
+    });
+
+    // Progress along the rail: milestones sit at equal steps, today sits between its neighbours by date.
+    var p = 1;
+    if (next === 0) p = 0;
+    else if (next > 0) {
+      var a = items[next - 1], b = items[next];
+      var frac = Math.min(1, Math.max(0, (today - a.date) / (b.date - a.date || 1)));
+      p = n > 1 ? (next - 1 + frac) / (n - 1) : 0;
+    }
+    tl.style.setProperty("--progress", p.toFixed(4));
+    var todayKey = $("[data-th-today]");
+    if (todayKey) todayKey.textContent = "Today, " + today.getDate() + " " + MONTHS[today.getMonth()];
+
+    var rail = $(".th-tl-rail", tl), pill = $(".th-tl-today", tl), scroller = tl.parentElement;
+    pill.hidden = next <= 0;
+    // Keep the today marker clear of the milestone dots on either side.
+    function placePill() {
+      if (pill.hidden || getComputedStyle(rail).display === "none") return;
+      var W = rail.clientWidth, seg = W / (n - 1);
+      var min = (next - 1) * seg + items[next - 1].dot.offsetWidth / 2 + 12;
+      var max = next * seg - items[next].dot.offsetWidth / 2 - 12;
+      pill.style.left = (min > max ? (min + max) / 2 : Math.min(max, Math.max(min, p * W))) + "px";
+    }
+    placePill();
+    window.addEventListener("resize", placePill);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(placePill);
+
+    // Detail row for the selected milestone
+    var detail = $("[data-th-detail]");
+    function fill(sel, text) { var el = $(sel, detail); if (el) el.textContent = text; }
+    function select(i) {
+      items.forEach(function (m, j) { m.btn.setAttribute("aria-pressed", String(i === j)); });
+      var m = items[i];
+      fill("[data-th-d-day]", ("0" + m.date.getDate()).slice(-2));
+      fill("[data-th-d-mon]", MONTHS[m.date.getMonth()]);
+      fill("[data-th-d-kind]", KIND[m.kind] + " · " + longDate(m.date));
+      fill("[data-th-d-title]", m.title);
+      fill("[data-th-d-note]", m.note);
+      var st = $("[data-th-d-state]", detail);
+      st.textContent = stateLabel(m);
+      st.classList.toggle("is-done", m.status === "done");
+    }
+    items.forEach(function (m, i) { m.btn.addEventListener("click", function () { select(i); }); });
+    var focus = next === -1 ? n - 1 : next;
+    select(focus);
+
+    // On narrow screens the track scrolls sideways; start with "up next" in view.
+    if (scroller.scrollWidth > scroller.clientWidth) {
+      var li = items[focus].li;
+      scroller.scrollLeft = li.offsetLeft + li.offsetWidth / 2 - scroller.clientWidth / 2;
+    }
+
+    // Spotlight: the next go-live, or the latest one once every go-live has passed.
+    var spot = $("[data-th-golive]");
+    if (!spot) return;
+    var goLives = items.filter(function (m) { return m.kind === "golive"; });
+    var gl = goLives.filter(function (m) { return m.days >= 0; })[0] || goLives[goLives.length - 1];
+    function put(sel, text) { var el = $(sel, spot); if (el) el.textContent = text; }
+    if (!gl) { spot.hidden = true; return; }
+    var upcoming = gl.days >= 0;
+    put("[data-th-gl-eyebrow]", upcoming ? "Next go-live" : "Latest go-live");
+    put("[data-th-gl-title]", gl.title);
+    put("[data-th-gl-when]", (gl.scope ? gl.scope + " · " : "") + longDate(gl.date));
+    put("[data-th-gl-days]", upcoming ? (gl.days === 0 ? "0" : String(gl.days)) : String(-gl.days));
+    put("[data-th-gl-unit]", upcoming ? (gl.days === 0 ? "Live today" : gl.days === 1 ? "day to go" : "days to go") : "days live");
+    var done = items.filter(function (m) { return m.status === "done"; }).length;
+    put("[data-th-gl-done]", done + " of " + n + " milestones complete");
+    var bar = $("[data-th-gl-bar]", spot);
+    if (bar) bar.style.setProperty("--done", Math.round(done / n * 100) + "%");
+  })();
+
+  /* ---------- Action Required ---------- */
+  $$(".th-act[data-due]").forEach(function (li) {
+    var due = parseDate(li.getAttribute("data-due"));
+    var flag = $(".th-act-flag", li);
+    if (!due || !flag) return;
+    var d = daysBetween(today, due);
+    var urgent = d <= SETTINGS.urgentWithinDays;
+    li.classList.toggle("is-urgent", urgent);
+    flag.hidden = !urgent;
+    flag.classList.toggle("is-overdue", d < 0);
+    flag.innerHTML = d < 0 ? "Overdue" : '<span aria-hidden="true">!</span><span class="th-sr">Due soon</span>';
+  });
+
+  /* ---------- Role tabs ---------- */
+  (function () {
+    var box = $("[data-th-roles]");
+    if (!box) return;
+    var tabs = $$('[role="tab"]', box);
+    function activate(tab, focus) {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute("aria-selected", String(on));
+        t.tabIndex = on ? 0 : -1;
+        var panel = document.getElementById(t.getAttribute("aria-controls"));
+        if (panel) panel.hidden = !on;
+      });
+      if (focus) tab.focus();
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener("click", function () { activate(t); });
+      t.addEventListener("keydown", function (e) {
+        var j = e.key === "ArrowRight" ? i + 1 : e.key === "ArrowLeft" ? i - 1 : e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : null;
+        if (j === null) return;
+        e.preventDefault();
+        activate(tabs[(j + tabs.length) % tabs.length], true);
+      });
+    });
+  })();
+
+  /* ---------- Bookmarks ---------- */
+  (function () {
+    var box = $("[data-th-bookmarks]");
+    if (!box) return;
+    var KEY = "th-training-bookmarks-v1";
+    var ICONS = { cap: 1, briefcase: 1, buoy: 1, link: 1 };
+    var list = $(".th-bm-list", box), toggle = $("[data-th-bm-toggle]", box), form = $(".th-bm-form", box);
+    var nameIn = $("#th-bm-name", box), urlIn = $("#th-bm-url", box);
+    var canStore = (function () {
+      try { localStorage.setItem(KEY + "-test", "1"); localStorage.removeItem(KEY + "-test"); return true; } catch (e) { return false; }
+    })();
+    $("[data-th-bm-hint]", box).textContent = "Remove a bookmark with its red button. " +
+      (canStore ? "Your bookmarks are saved in this browser." : "Changes last until you leave this page.");
+    function safeUrl(u) { return /^(https?:\/\/|\/|#$)/i.test(u || ""); }
+    var marks = $$(".th-bm-item:not(.is-fixed) a", list).map(function (a) {
+      var use = a.querySelector("use");
+      return { title: a.textContent.trim(), url: a.getAttribute("href"), icon: use ? use.getAttribute("href").replace("#th-i-", "") : "link" };
+    });
+    try {
+      var saved = JSON.parse(localStorage.getItem(KEY) || "null");
+      if (Array.isArray(saved)) marks = saved.filter(function (m) { return m && m.title && safeUrl(m.url); });
+    } catch (e) {}
+    function save() { try { localStorage.setItem(KEY, JSON.stringify(marks)); } catch (e) {} }
+
+    function render() {
+      $$(".th-bm-item:not(.is-fixed)", list).forEach(function (li) { li.parentNode.removeChild(li); });
+      marks.forEach(function (m, i) {
+        var li = document.createElement("li");
+        li.className = "th-bm-item";
+        var a = document.createElement("a");
+        a.className = "th-bm";
+        a.href = m.url;
+        if (m.url.charAt(0) !== "#") setTarget(a);
+        a.innerHTML = '<svg class="th-ic" aria-hidden="true"><use href="#th-i-' + (ICONS[m.icon] ? m.icon : "link") + '"/></svg>';
+        var label = document.createElement("span");
+        label.textContent = m.title;
+        a.appendChild(label);
+        var x = document.createElement("button");
+        x.type = "button";
+        x.className = "th-bm-x";
+        x.setAttribute("aria-label", "Remove " + m.title);
+        x.innerHTML = '<svg class="th-ic" aria-hidden="true"><use href="#th-i-x"/></svg>';
+        x.addEventListener("click", function () {
+          marks.splice(i, 1);
+          save();
+          render();
+          toggle.focus();
+          toast("Removed “" + m.title + "” from your bookmarks.");
+        });
+        li.appendChild(a);
+        li.appendChild(x);
+        list.appendChild(li);
+      });
+    }
+    render();
+
+    toggle.addEventListener("click", function () {
+      var open = toggle.getAttribute("aria-expanded") !== "true";
+      toggle.setAttribute("aria-expanded", String(open));
+      box.classList.toggle("is-editing", open);
+      form.hidden = !open;
+      if (open) nameIn.focus();
+    });
+    function add() {
+      var title = nameIn.value.trim(), url = urlIn.value.trim();
+      if (!title || !/^https?:\/\//i.test(url)) { toast("Enter a name and a link that starts with https://"); return; }
+      marks.push({ title: title, url: url, icon: "link" });
+      save();
+      render();
+      nameIn.value = "";
+      urlIn.value = "";
+      nameIn.focus();
+      toast("Added “" + title + "” to your bookmarks.");
+    }
+    $("[data-th-bm-add]", box).addEventListener("click", add);
+    [nameIn, urlIn].forEach(function (el) {
+      el.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    });
+  })();
+
+  /* ---------- Feedback ---------- */
+  // The page cannot send data, so Submit opens the Microsoft Forms link in SETTINGS with the text filled in.
+  (function () {
+    var box = $("[data-th-feedback]");
+    if (!box) return;
+    var text = box.querySelector("textarea"), msg = $(".th-fb-msg", box);
+    function say(t, isError) { msg.textContent = t; msg.classList.toggle("is-error", !!isError); }
+    $("[data-th-fb-send]", box).addEventListener("click", function () {
+      var value = text.value.trim();
+      if (!value) { say("Write your feedback first, then select Submit.", true); text.focus(); return; }
+      if (!SETTINGS.feedbackForm) { say("Feedback isn't connected yet. Add the Microsoft Forms link to SETTINGS.feedbackForm."); return; }
+      var url = SETTINGS.feedbackForm.replace("FEEDBACK", encodeURIComponent(value));
+      var w = window.open(url, "_blank");
+      if (!w) { say("Your browser blocked the feedback form. Allow pop-ups for this site, then select Submit again.", true); return; }
+      try { w.opener = null; } catch (e) {}
+      say("The feedback form opened in a new tab with your text. Select Submit there to send it.");
+    });
+  })();
+})();
+</script>
+</body>
+</html>
