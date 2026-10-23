@@ -1,0 +1,1127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D365 Training Hub</title>
+<meta name="description" content="Procedure guides, quick reference guides, recordings and templates for Dynamics 365 at WiseTech Global">
+<!-- @fonts: tools/build.py replaces this line with DM Sans and DM Mono embedded as base64 WOFF2 -->
+<style>
+/* D365 Training Hub, SharePoint HTML page.
+   SharePoint renders this file in a sandboxed frame below its own header and navigation, so the page carries
+   no site chrome. Everything it needs is inside the file: fonts (embedded by the build), styles, icons and script.
+   Layout: full-width Midnight hero, a 1200px content well, two-thirds / one-third sections, one WiseTech Blue panel.
+   Tokens come from the WiseTech Global Design System (2025 RGB swatches, DM Sans / DM Mono, one 10px radius, no shadows). */
+:root {
+  color-scheme: light;
+  /* Brand palette */
+  --wtg-blue: #1d1765;
+  --cobalt: #371ee1;
+  --cobalt-hover: #2c16c4;
+  --cobalt-050: #ecebff;
+  --midnight: #141e30;
+  --sky: #a7cff8;
+  --sky-100: #d7e6fa;
+  --violet: #b7b3ff;
+  --peach: #ffbf98;
+  --mint: #c6ffd1;
+  --white: #ffffff;
+  /* Ink scale, tuned to Midnight */
+  --ink-900: #0e1726;
+  --ink-800: #141e30;
+  --ink-700: #243450;
+  --ink-500: #5d6b82;
+  --ink-400: #8b96a8;
+  --ink-300: #b9c0cc;
+  --ink-200: #dde1e8;
+  --ink-100: #eef0f4;
+  --ink-50: #f7f8fb;
+  /* Semantic */
+  --text-strong: var(--ink-900);
+  --text: var(--ink-800);
+  --muted: var(--ink-500);
+  --line: var(--ink-200);
+  --line-2: var(--ink-300);
+  --field-line: #808b9e; /* 3.4:1 on white, 3.2:1 on the subtle band: meets WCAG 1.4.11 for input edges */
+  --page: var(--white);
+  --subtle: var(--ink-50);
+  --ok-ink: #0c5a2e;
+  --on-dark: var(--white);
+  --on-dark-muted: rgba(255, 255, 255, 0.74);
+  --on-dark-line: rgba(255, 255, 255, 0.16);
+  /* Type */
+  --font-sans: "DM Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "DM Mono", "SFMono-Regular", ui-monospace, Menlo, monospace;
+  /* Shape and motion */
+  --radius: 10px;
+  --ease: cubic-bezier(0.2, 0, 0.1, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --fast: 120ms;
+  --norm: 200ms;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+  font: 400 16px/1.55 var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+[hidden] { display: none !important; }
+h1, h2, h3, h4, p, ol, ul, figure { margin: 0; }
+ol, ul { padding: 0; list-style: none; }
+a { color: var(--cobalt); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 2px; }
+.on-dark :focus-visible { outline-color: var(--sky); }
+.on-dark .tcard :focus-visible, .on-dark .search :focus-visible { outline-color: var(--cobalt); }
+.sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.skip:focus { position: fixed; z-index: 50; top: 8px; left: 8px; width: auto; height: auto; margin: 0; padding: 10px 14px; clip: auto; border-radius: var(--radius); background: var(--white); color: var(--cobalt); font-weight: 700; }
+.ic { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+.wrap {
+  max-width: 1248px;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 720px) {
+  .wrap {
+    padding-left: max(24px, env(safe-area-inset-left, 0px));
+    padding-right: max(24px, env(safe-area-inset-right, 0px));
+  }
+}
+
+/* ---------- Shared pieces ---------- */
+.eyebrow { font: 500 13px/1.2 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--cobalt); }
+.sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; margin-bottom: 24px; }
+.sec-head h2 { margin-top: 10px; font: 700 clamp(1.5rem, 1.15rem + 1.1vw, 1.75rem)/1.18 var(--font-sans); letter-spacing: -0.01em; color: var(--text-strong); text-wrap: balance; }
+.more { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 15px; }
+.more .ic { width: 18px; height: 18px; transition: transform var(--fast) var(--ease); }
+.more:hover .ic { transform: translateX(2px); }
+
+.tile { --g: 22px; display: inline-grid; place-items: center; width: calc(var(--g) * 1.85); height: calc(var(--g) * 1.85); border-radius: var(--radius); color: var(--wtg-blue); flex: none; }
+.tile .ic { width: var(--g); height: var(--g); }
+.tile.sm { --g: 18px; border-radius: 8px; }
+.tone-sky { background: var(--sky); }
+.tone-sky100 { background: var(--sky-100); }
+.tone-violet { background: var(--violet); }
+.tone-peach { background: var(--peach); }
+.tone-mint { background: var(--mint); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 44px; padding: 0 20px; border-radius: var(--radius); border: 1px solid transparent;
+  font: 700 15px/1 var(--font-sans); letter-spacing: -0.01em; white-space: nowrap; text-decoration: none;
+  transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease), color var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+.btn:hover { text-decoration: none; }
+.btn:active { transform: translateY(1px); }
+.btn .ic { width: 18px; height: 18px; }
+.btn.sm { height: 36px; padding: 0 14px; font-size: 14px; }
+.btn.primary { background: var(--cobalt); color: var(--white); }
+.btn.primary:hover { background: var(--cobalt-hover); }
+.btn.secondary { background: var(--white); color: var(--text-strong); border-color: var(--line-2); }
+.btn.secondary:hover { background: var(--ink-50); border-color: var(--ink-500); }
+
+.badge { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 6px; font: 700 12px/1 var(--font-sans); letter-spacing: 0.01em; color: var(--ink-900); white-space: nowrap; }
+.t-pg { background: var(--sky); }
+.t-qrg { background: var(--violet); }
+.t-rec { background: var(--peach); }
+.t-tpl { background: var(--mint); }
+.code { font: 400 12.5px/1.4 var(--font-mono); letter-spacing: 0.02em; color: var(--muted); }
+.flag { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 5px; background: var(--mint); color: var(--ok-ink); font: 700 11px/1 var(--font-sans); letter-spacing: 0.02em; vertical-align: 2px; margin-left: 4px; }
+
+.doc-chip { display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 10px; border: 1px solid var(--line-2); border-radius: 6px; background: var(--white); font: 400 12.5px/1 var(--font-mono); color: var(--text-strong); transition: border-color var(--fast) var(--ease); }
+.doc-chip:hover { border-color: var(--ink-500); text-decoration: none; }
+.doc-chip i { width: 8px; height: 8px; border-radius: 2px; }
+
+.section { padding-block: 72px; }
+@media (max-width: 720px) { .section { padding-block: 48px; } }
+.band { background: var(--subtle); border-block: 1px solid var(--line); }
+.split { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+@media (max-width: 980px) { .split { grid-template-columns: minmax(0, 1fr); gap: 48px; } }
+
+/* ---------- Hero ---------- */
+.hero { position: relative; overflow: hidden; background: var(--midnight); color: var(--on-dark); }
+.hero::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(167, 207, 248, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(167, 207, 248, 0.07) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(ellipse 60% 85% at 78% 45%, #000 15%, transparent 72%);
+  mask-image: radial-gradient(ellipse 60% 85% at 78% 45%, #000 15%, transparent 72%);
+}
+.hero-grid { position: relative; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr); gap: 56px; align-items: center; padding-block: 64px 136px; }
+@media (max-width: 980px) { .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; padding-block: 40px 120px; } }
+.hero .eyebrow { color: var(--sky); }
+.hero h1 { margin-top: 16px; font: 700 clamp(2.25rem, 1.35rem + 3.3vw, 3.5rem)/1.04 var(--font-sans); letter-spacing: -0.02em; text-wrap: balance; }
+.hero h1 .l { display: block; }
+.hero .lead { margin-top: 18px; max-width: 52ch; font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem); line-height: 1.55; color: var(--on-dark-muted); }
+.search { display: flex; align-items: center; gap: 10px; max-width: 600px; margin-top: 28px; padding: 6px 6px 6px 16px; border-radius: var(--radius); background: var(--white); color: var(--text-strong); }
+.search > .ic { color: var(--muted); }
+.search input { flex: 1; min-width: 0; height: 44px; border: 0; outline: 0; background: transparent; font-size: 16px; color: var(--text-strong); }
+.search input::placeholder { color: var(--ink-500); }
+.search input::-webkit-search-cancel-button { display: none; }
+.search:focus-within { outline: 3px solid var(--sky); outline-offset: 2px; }
+@media (max-width: 480px) { .search .btn-label { display: none; } .search .btn { padding: 0 14px; } }
+.popular { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 16px; }
+.popular .lbl { margin-right: 4px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--sky); }
+.chip-dark { height: 32px; padding: 0 12px; border-radius: var(--radius); border: 1px solid rgba(255, 255, 255, 0.26); background: transparent; color: var(--on-dark); font-size: 14px; transition: border-color var(--fast) var(--ease), background var(--fast) var(--ease); }
+.chip-dark:hover { border-color: rgba(255, 255, 255, 0.62); background: rgba(255, 255, 255, 0.06); }
+@media (max-width: 560px) {
+  .popular { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: -16px; padding: 4px 16px; }
+  .popular::-webkit-scrollbar { display: none; }
+  .chip-dark { flex: none; }
+}
+
+/* Most used: the five most-opened resources, ranked */
+.top { padding: 24px; border-radius: var(--radius); background: var(--wtg-blue); border: 1px solid rgba(167, 207, 248, 0.2); }
+.top-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.top-head h2 { font: 500 13px/1.2 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--sky); }
+.top-head .more { color: var(--on-dark); font-size: 14px; }
+.top-list { display: grid; margin-top: 10px; }
+.top-list li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: start; padding-block: 14px; border-top: 1px solid var(--on-dark-line); }
+.top-list li:first-child { border-top: 0; }
+.rank { padding-top: 2px; font: 500 15px/1.3 var(--font-mono); color: var(--sky); }
+.top-t { display: block; font-weight: 500; font-size: 16px; line-height: 1.35; color: var(--on-dark); }
+.top-t:hover { color: var(--on-dark); }
+.top-m { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; }
+.top-m .badge { height: 20px; padding: 0 7px; font-size: 11px; border-radius: 5px; }
+.top-m .code { color: var(--on-dark-muted); }
+@media (max-width: 560px) { .top { padding: 20px; } .top-list li:nth-child(n + 4) { display: none; } }
+
+/* ---------- Format pillars ---------- */
+.pillars { position: relative; margin-top: -84px; }
+.pillar-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 1080px) { .pillar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pillar { display: flex; flex-direction: column; gap: 10px; padding: 22px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--white); color: var(--text); transition: border-color var(--norm) var(--ease-out); }
+.pillar:hover { border-color: var(--ink-400); text-decoration: none; }
+.pillar-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px; }
+.pillar .abbr { font: 500 12px/1 var(--font-mono); letter-spacing: 0.12em; color: var(--muted); }
+.pillar h3 { font: 700 20px/1.2 var(--font-sans); letter-spacing: -0.01em; color: var(--text-strong); }
+.pillar p { font-size: 15px; line-height: 1.5; color: var(--muted); }
+.pillar-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); font: 400 12.5px/1.3 var(--font-mono); color: var(--muted); }
+.pillar-foot b { display: inline-flex; align-items: center; gap: 6px; font: 700 14px/1 var(--font-sans); color: var(--cobalt); white-space: nowrap; }
+.pillar-foot .ic { width: 16px; height: 16px; transition: transform var(--fast) var(--ease); }
+.pillar:hover .pillar-foot .ic { transform: translateX(2px); }
+@media (max-width: 560px) {
+  .pillar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .pillar { flex-direction: row; align-items: center; gap: 12px; padding: 12px; }
+  .pillar-top { margin: 0; }
+  .pillar .tile { --g: 18px; border-radius: 8px; }
+  .pillar h3 { font-size: 15px; line-height: 1.25; }
+  .pillar .abbr, .pillar p, .pillar-foot { display: none; }
+}
+
+/* ---------- Process areas ---------- */
+.areas { padding-block: 64px 72px; }
+@media (max-width: 720px) { .areas { padding-block: 48px; } }
+.area-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 1080px) { .area-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .area-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.area { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 16px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--white); text-align: left; transition: border-color var(--norm) var(--ease-out); }
+.area:hover { border-color: var(--ink-400); }
+.area-txt { min-width: 0; }
+.area b { display: block; font: 700 15.5px/1.25 var(--font-sans); color: var(--text-strong); }
+.area small { display: block; margin-top: 3px; font-size: 13px; line-height: 1.35; color: var(--muted); }
+.area .chev { margin-left: auto; width: 18px; height: 18px; color: var(--ink-400); transition: transform var(--fast) var(--ease), color var(--fast) var(--ease); }
+.area:hover .chev { transform: translateX(2px); color: var(--cobalt); }
+@media (max-width: 560px) {
+  .area-grid { gap: 10px; }
+  .area { gap: 10px; padding: 12px; }
+  .area b { font-size: 14.5px; }
+  .area small, .area .chev { display: none; }
+}
+
+/* ---------- Library ---------- */
+.tabs { display: flex; gap: 28px; overflow-x: auto; scrollbar-width: none; padding: 4px 4px 0; margin-inline: -4px; border-bottom: 1px solid var(--line); }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { position: relative; flex: none; padding: 0 0 14px; border: 0; background: transparent; font: 700 15.5px/1.2 var(--font-sans); color: var(--muted); transition: color var(--fast) var(--ease); }
+.tab:hover { color: var(--text-strong); }
+.tab .ts { display: none; }
+.tab .ct { margin-left: 4px; font: 500 12px/1 var(--font-mono); color: var(--ink-500); }
+.tab[aria-selected="true"] { color: var(--wtg-blue); }
+.tab[aria-selected="true"] .ct { color: var(--cobalt); }
+.tab[aria-selected="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; border-radius: 2px 2px 0 0; background: var(--cobalt); }
+@media (max-width: 560px) { .tabs { gap: 20px; } .tabs .tab .tl { display: none; } .tabs .tab .ts { display: inline; } }
+.lib-tools { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.field { position: relative; display: flex; align-items: center; }
+.field.grow { flex: 1 1 280px; }
+.field > .ic { position: absolute; left: 14px; width: 18px; height: 18px; color: var(--muted); pointer-events: none; }
+.field input, .field select { width: 100%; height: 44px; border-radius: var(--radius); border: 1px solid var(--field-line); background: var(--white); color: var(--text-strong); font-size: 15px; transition: border-color var(--fast) var(--ease); }
+.field input { padding: 0 14px 0 42px; }
+.field input::-webkit-search-cancel-button { display: none; }
+.field select { appearance: none; -webkit-appearance: none; padding: 0 40px 0 14px; }
+.field select + .ic { left: auto; right: 12px; }
+.field input:focus-visible, .field select:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 0; border-color: var(--cobalt); }
+.field.sel { flex: 0 1 220px; }
+@media (max-width: 640px) { .field.grow { flex-basis: 100%; } .field.sel { flex: 1 1 140px; } }
+.lib-status { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; min-height: 36px; margin-top: 14px; font-size: 14px; color: var(--muted); }
+.lib-status .more { font-size: 14px; }
+.linkbtn { border: 0; background: none; padding: 4px 0; font-weight: 700; font-size: 14px; color: var(--cobalt); }
+.linkbtn:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.lib-list { display: grid; gap: 8px; margin-top: 4px; }
+.row {
+  display: grid; align-items: center; gap: 6px 20px;
+  grid-template-columns: 84px minmax(0, 1fr) 160px 150px 112px;
+  grid-template-areas: "badge main area when act";
+  padding: 16px 18px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--white);
+  transition: border-color var(--norm) var(--ease-out);
+}
+.row:hover { border-color: var(--ink-400); }
+.row .badge { grid-area: badge; justify-self: start; }
+.row-main { grid-area: main; min-width: 0; }
+.row h3 { font: 700 16px/1.35 var(--font-sans); color: var(--text-strong); }
+.row h3 a { color: inherit; }
+.row .sub { margin-top: 4px; font: 400 12.5px/1.45 var(--font-mono); color: var(--muted); overflow-wrap: anywhere; }
+.row-area { grid-area: area; font-size: 14px; color: var(--text); }
+.row-when { grid-area: when; display: grid; gap: 3px; font-size: 13px; color: var(--muted); }
+.row .btn { grid-area: act; justify-self: end; }
+@media (max-width: 980px) {
+  .row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "badge act" "main main" "area when"; padding: 16px; gap: 10px 12px; }
+  .row-when { display: flex; gap: 10px; justify-content: flex-end; text-align: right; }
+}
+@media (max-width: 480px) {
+  .row { grid-template-areas: "badge act" "main main" "when when"; padding: 14px; gap: 8px 12px; }
+  .row-when { justify-content: flex-start; text-align: left; }
+  .row-area { display: none; }
+  .row h3 .flag { margin-left: 6px; }
+}
+.lib-empty { padding: 32px; border-radius: var(--radius); border: 1px dashed var(--line-2); background: var(--white); text-align: center; color: var(--muted); }
+.lib-empty b { display: block; margin-bottom: 4px; font-size: 16px; color: var(--text-strong); }
+.lib-empty .more { margin-top: 12px; }
+.lib-more { display: flex; justify-content: center; margin-top: 20px; }
+
+/* ---------- Learning paths + sessions ---------- */
+.roles { display: flex; gap: 8px; flex-wrap: wrap; }
+.role { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: var(--radius); border: 1px solid var(--line-2); background: var(--white); font-size: 14.5px; color: var(--text); transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease); }
+.role:hover { background: var(--ink-50); }
+.role[aria-selected="true"] { background: var(--cobalt-050); border-color: var(--cobalt); color: var(--wtg-blue); font-weight: 700; }
+.path { margin-top: 18px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--white); }
+.path-head { display: grid; gap: 12px; padding: 22px 24px; }
+.path-head p { color: var(--text); max-width: 60ch; }
+.path-stats { display: flex; flex-wrap: wrap; gap: 6px 18px; font: 400 12.5px/1.4 var(--font-mono); color: var(--muted); }
+.path-stats b { font-weight: 500; color: var(--text-strong); }
+.pstep { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 14px 24px; border-top: 1px solid var(--line); }
+.pstep .n { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; border: 1px solid var(--line-2); font: 500 13px/1 var(--font-mono); color: var(--wtg-blue); }
+.pstep-main { min-width: 0; }
+.pstep .t { display: block; font-weight: 700; font-size: 15.5px; line-height: 1.35; color: var(--text-strong); }
+.pstep .t:hover { color: var(--cobalt); }
+.pstep .m { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 5px; font-size: 13px; color: var(--muted); }
+.pstep .badge { height: 20px; padding: 0 7px; font-size: 11px; border-radius: 5px; }
+.state { font: 500 11.5px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+@media (max-width: 560px) { .path-head { padding: 18px; } .pstep { padding: 14px 18px; gap: 8px 12px; } }
+
+.card { padding: 22px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--white); }
+.card-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; font: 700 17px/1.25 var(--font-sans); color: var(--text-strong); }
+.sess li { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding-block: 12px; border-top: 1px solid var(--line); }
+.sess li:first-child { border-top: 0; }
+.date { width: 52px; height: 56px; display: grid; place-content: center; text-align: center; border-radius: 8px; border: 1px solid var(--line-2); }
+.date b { display: block; font: 500 20px/1 var(--font-mono); color: var(--wtg-blue); }
+.date span { display: block; margin-top: 5px; font: 500 11px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.sess-main { min-width: 0; }
+.sess-main b { display: block; font-size: 15px; line-height: 1.3; color: var(--text-strong); }
+.sess-main small { display: block; margin-top: 3px; font-size: 13px; color: var(--muted); }
+.card-foot { display: flex; margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--line); }
+
+/* ---------- Templates band ---------- */
+.tband { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; padding: clamp(24px, 4vw, 48px); border-radius: var(--radius); background: var(--wtg-blue); color: var(--on-dark); }
+@media (max-width: 980px) { .tband { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
+.tband .eyebrow { color: var(--sky); }
+.tband h2 { margin-top: 12px; font: 700 clamp(1.75rem, 1.2rem + 1.7vw, 2.5rem)/1.08 var(--font-sans); letter-spacing: -0.02em; text-wrap: balance; }
+.tband .lead { margin-top: 14px; max-width: 48ch; color: var(--on-dark-muted); }
+.tsteps { display: grid; gap: 18px; margin-top: 28px; }
+.tsteps li { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 14px; }
+.tsteps .n { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 8px; background: var(--sky); color: var(--wtg-blue); font: 500 14px/1 var(--font-mono); }
+.tsteps b { display: block; padding-top: 6px; font-weight: 700; line-height: 1.3; }
+.tsteps span { display: block; margin-top: 4px; font-size: 15px; color: var(--on-dark-muted); }
+.tcards { display: grid; gap: 12px; align-content: start; }
+.tcard { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "tile main act"; gap: 6px 16px; align-items: center; padding: 18px; border-radius: var(--radius); background: var(--white); color: var(--text); }
+.tcard .tile { grid-area: tile; }
+.tcard-main { grid-area: main; min-width: 0; }
+.tcard .btn { grid-area: act; }
+.tcard h3 { font: 700 16px/1.3 var(--font-sans); color: var(--text-strong); }
+.tcard .sub { margin-top: 3px; font: 400 12.5px/1.45 var(--font-mono); color: var(--muted); overflow-wrap: anywhere; }
+.tested { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; color: var(--ok-ink); }
+.tested .ic { width: 15px; height: 15px; stroke-width: 2; }
+@media (max-width: 520px) { .tcard { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "tile main" "act act"; } .tcard .btn { justify-self: stretch; margin-top: 8px; } }
+.tband-more { margin-top: 4px; color: var(--sky); }
+.tband-more:hover { color: var(--white); }
+
+/* ---------- What's changed + Get started ---------- */
+.chg { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 20px; padding-block: 20px; border-top: 1px solid var(--line); }
+.chg:last-child { border-bottom: 1px solid var(--line); }
+.chg time { padding-top: 2px; font: 500 13px/1.4 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.chg .tag { font: 500 12px/1.3 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--cobalt); }
+.chg h3 { margin-top: 6px; font: 700 17px/1.3 var(--font-sans); color: var(--text-strong); }
+.chg p { margin-top: 6px; max-width: 62ch; font-size: 15px; color: var(--muted); }
+.links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+@media (max-width: 560px) { .chg { grid-template-columns: minmax(0, 1fr); gap: 6px; } }
+
+.start { padding: 26px; border-radius: var(--radius); background: var(--sky-100); color: var(--ink-900); }
+.start .eyebrow { color: var(--wtg-blue); }
+.start h2 { margin-top: 10px; font: 700 22px/1.2 var(--font-sans); letter-spacing: -0.01em; color: var(--wtg-blue); }
+.vsteps { display: grid; margin-top: 20px; }
+.vsteps li { position: relative; display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 14px; padding-bottom: 20px; }
+.vsteps li:not(:last-child)::before { content: ""; position: absolute; left: 15.5px; top: 36px; bottom: 4px; width: 1px; background: rgba(29, 23, 101, 0.28); }
+.vsteps .n { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; border: 1px solid rgba(29, 23, 101, 0.22); background: var(--white); font: 500 13px/1 var(--font-mono); color: var(--wtg-blue); }
+.vsteps b { display: block; padding-top: 5px; font-weight: 700; line-height: 1.3; color: var(--wtg-blue); }
+.vsteps span { display: block; margin-top: 4px; font-size: 14.5px; line-height: 1.5; color: var(--ink-700); }
+.start .btn { width: 100%; margin-top: 4px; }
+
+/* ---------- Support ---------- */
+.faq { border-top: 1px solid var(--line); }
+.faq details { border-bottom: 1px solid var(--line); }
+.faq summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 2px; list-style: none; cursor: pointer; font: 700 16.5px/1.35 var(--font-sans); color: var(--text-strong); }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:hover { color: var(--wtg-blue); }
+.pm { width: 30px; height: 30px; display: grid; place-items: center; flex: none; border-radius: 8px; border: 1px solid var(--line-2); background: var(--white); color: var(--wtg-blue); }
+.pm .ic { width: 16px; height: 16px; transition: transform var(--norm) var(--ease); }
+.faq details[open] .pm .ic { transform: rotate(45deg); }
+.faq .ans { max-width: 68ch; padding: 0 2px 20px; color: var(--muted); }
+.help li { border-top: 1px solid var(--line); }
+.help li:first-child { border-top: 0; }
+.help a { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center; padding-block: 14px; color: var(--text); }
+.help a:hover { text-decoration: none; }
+.help a:hover b { color: var(--cobalt); }
+.help b { display: block; font-size: 15px; line-height: 1.3; color: var(--text-strong); transition: color var(--fast) var(--ease); }
+.help small { display: block; margin-top: 2px; font-size: 13px; color: var(--muted); }
+.help .chev { width: 18px; height: 18px; color: var(--ink-400); }
+.suggest { display: grid; gap: 6px; margin-top: 8px; padding-top: 18px; border-top: 1px solid var(--line); }
+.suggest b { font-size: 15px; color: var(--text-strong); }
+.suggest p { font-size: 14px; color: var(--muted); }
+.suggest .btn { justify-self: start; margin-top: 8px; }
+
+/* ---------- Footer ---------- */
+.foot { background: var(--midnight); color: var(--on-dark); }
+.foot-in { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px 48px; padding-block: 52px 36px; }
+@media (max-width: 860px) { .foot-in { grid-template-columns: minmax(0, 1fr); } }
+.foot .logo { height: 28px; width: auto; display: block; }
+.foot h2 { margin-top: 22px; font: 700 18px/1.2 var(--font-sans); }
+.foot p { margin-top: 8px; max-width: 54ch; font-size: 14.5px; color: var(--on-dark-muted); }
+.foot nav ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; }
+.foot nav a { font-size: 14.5px; color: var(--on-dark); }
+.foot-base { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; padding-block: 18px 22px; border-top: 1px solid rgba(255, 255, 255, 0.12); font: 400 12.5px/1.4 var(--font-mono); color: rgba(255, 255, 255, 0.62); }
+
+@media (max-width: 560px) {
+  .btn.sm, .role, .chip-dark { height: 44px; }
+  .doc-chip { height: 40px; }
+}
+
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- Icon set: the WiseTech Global verified line icons (24px, 1.5 stroke). file-text, video, file-sheet, arrow,
+     chevrons, download and play are drawn in the same style for the hub. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 16.864c-2.028-2.029-5.085-2.402-7.492-1.119-.683.364-1.508-.085-1.508-.859v-9.092c0-.636.294-1.248.812-1.617 2.485-1.772 5.958-1.543 8.188.687 2.23-2.23 5.703-2.459 8.188-.687.518.369.812.981.812 1.617v9.092c0 .774-.825 1.224-1.508.859-2.407-1.283-5.464-.91-7.492 1.119Z"/><path d="M4.508 19.881c2.407-1.283 5.464-.91 7.492 1.119 2.028-2.029 5.085-2.402 7.492-1.119"/><line x1="12" x2="12" y1="16.86" y2="4.86"/></symbol>
+  <symbol id="i-file-text" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/></symbol>
+  <symbol id="i-sheet" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h2"/><path d="M14 13h2"/><path d="M8 17h2"/><path d="M14 17h2"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-browser" viewBox="0 0 24 24"><path d="M17 21h1a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3H6A3 3 0 0 0 3 6v12a3 3 0 0 0 3 3h1"/><path d="M3 9h18"/><path d="M6 5.995 5.995 6 6 6.005 6.005 6 6 5.995"/><path d="M8.5 5.995 8.495 6l.005.005L8.505 6 8.5 5.995"/><path d="M11 5.995 10.995 6 11 6.005 11.005 6 11 5.995"/><path d="M10.5 20.75 11.75 22l2-2"/></symbol>
+  <symbol id="i-coins" viewBox="0 0 24 24"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8"/><path d="M8 11h8"/><path d="M8 15h5"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></symbol>
+  <symbol id="i-desk" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></symbol>
+  <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V10"/><path d="M19 21V10"/><path d="M9 21v-6"/><path d="M15 21v-6"/><path d="m3 10 9-7 9 7"/></symbol>
+  <symbol id="i-briefcase" viewBox="0 0 24 24"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></symbol>
+  <symbol id="i-pie" viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 16v-4"/><path d="M12 16V8"/><path d="M16 16v-6"/></symbol>
+  <symbol id="i-flow" viewBox="0 0 24 24"><path d="M18 9h-12c-1.105 0-2-.895-2-2v-2c0-1.105.895-2 2-2h12c1.105 0 2 .895 2 2v2c0 1.105-.895 2-2 2Z"/><line x1="12" x2="12" y1="9" y2="17"/><path d="M19 16.846v-1.846c0-1.105-.895-2-2-2h-10c-1.105 0-2 .895-2 2v1.846"/><path d="M13.037 21h-2.074c-.532 0-.963-.431-.963-.963v-2.074c0-.532.431-.963.963-.963h2.074c.532 0 .963.431.963.963v2.074c0 .532-.431.963-.963.963Z"/><path d="M20.037 21h-2.074c-.532 0-.963-.431-.963-.963v-2.074c0-.532.431-.963.963-.963h2.074c.532 0 .963.431.963.963v2.074c0 .532-.431.963-.963.963Z"/><path d="M6.037 21h-2.074c-.532 0-.963-.431-.963-.963v-2.074c0-.532.431-.963.963-.963h2.074c.532 0 .963.431.963.963v2.074c0 .532-.431.963-.963.963Z"/></symbol>
+  <symbol id="i-support" viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M13 21H6a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H18a3 3 0 0 1 3 3V13"/><path d="M18 16v4"/><path d="M16 18h4"/><line x1="7.5" y1="3" x2="7.5" y2="6"/><line x1="16.5" y1="3" x2="16.5" y2="6"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a.5.5 0 0 0 .77.42l11.5-7.5a.5.5 0 0 0 0-.84L7.77 4.08A.5.5 0 0 0 7 4.5Z"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="logo-wtg" viewBox="0 0 668.78 207.1"><g fill="currentColor" stroke="none"><polygon points="225.97 25.64 238.17 25.76 250.92 65.47 265.58 25.76 277.44 25.76 291.87 65.47 305.08 25.76 317.27 25.76 297.8 81.7 286.28 81.7 271.4 41.76 256.29 81.7 244.54 81.7 225.97 25.64"></polygon><path d="M329.14,1a7.76,7.76,0,0,1,8.05,8.05,8.06,8.06,0,1,1-16.11,0,7.76,7.76,0,0,1,8.06-8m-6.05,24.73h12.09V81.7H323.09Z"></path><path d="M340.85,70.17l10.74-5.81c3.25,5.25,8.06,8,14.77,8,6.94,0,10.52-3.35,10.52-7.27,0-4.59-6.72-5.59-13.88-7.16-9.51-1.9-19.58-5-19.58-16.56,0-8.84,8.51-17,21.82-16.89,10.85,0,18.13,4,22.83,10.85L378,40.86c-2.69-4-6.83-6.38-12.76-6.38-6.6,0-9.73,3-9.73,6.72,0,4,4.81,4.92,13.31,6.82,9.4,2,20,5.15,20,16.9,0,8.39-7.5,18-23.05,17.9-12.08,0-20.14-4.37-24.95-12.65"></path><path d="M393.41,54c0-16.45,12.65-29.31,29.1-29.31s28.75,12,28.75,28.53v4.7H404.94c1.57,8.61,8.28,14.32,18,14.32a17.55,17.55,0,0,0,16.34-10.07l9.84,5.48c-4.92,9.18-13.76,15.22-26.18,15.22-17.67,0-29.54-12.65-29.54-28.87m12.09-6.26h33.56c-1.79-8.06-7.94-12.54-16.55-12.54a17.4,17.4,0,0,0-17,12.54"></path><path d="M454.22,25.76h9.51V12.55L475.81,6V25.76h11.86V36.5H475.81V58.76c0,10.07,1.57,11.64,11.86,11.64V81.7h-1.79c-17,0-22.15-5.37-22.15-22.83V36.5h-9.51Z"></path><path d="M491,54c0-16.45,12.64-29.31,29.09-29.31s28.76,12,28.76,28.53v4.7H502.56c1.57,8.61,8.28,14.32,18,14.32a17.54,17.54,0,0,0,16.33-10.07l9.85,5.48c-4.92,9.18-13.76,15.22-26.18,15.22C502.9,82.82,491,70.17,491,54m12.08-6.26h33.57c-1.79-8.06-7.94-12.54-16.56-12.54a17.4,17.4,0,0,0-17,12.54"></path><path d="M554.14,53.73a28.77,28.77,0,0,1,29.2-29.09c12.42,0,22.26,7.05,26.51,17.12l-10.74,4.58a16.66,16.66,0,0,0-15.77-10.51c-10,0-17.46,7.94-17.46,17.9a17.63,17.63,0,0,0,17.68,17.9c7.61,0,13.2-4.7,15.78-11l10.85,4.59c-4.48,10.3-13.76,17.57-26.85,17.57a28.84,28.84,0,0,1-29.2-29.09"></path><path d="M617,0h11.86V32.8a21.52,21.52,0,0,1,17.23-8.16c14.1,0,22.72,9.17,22.72,24.39V81.7h-12.2V50.15C656.58,40.86,652.11,35,643,35c-7.94,0-14.1,6-14.1,15.89V81.7H617Z"></path><path d="M0,147.16H16.35v-49H0Zm65.4,32.73H81.76V130.83H65.4Zm98.11-32.73h16.35v-49H163.51ZM0,81.76H16.35V0H0Zm32.7,0H49.05V0H32.7Zm32.7,0H81.76V0H65.4ZM98.11,179.9h16.35V98.14H98.11Zm32.7-98h16.35V.13H130.81Z"></path><path d="M228.94,151.88c0-17.92,13.33-29.12,28-29.12a23.82,23.82,0,0,1,18.59,8.74v-7.62h12v54.66c0,16.46-10.31,28.56-28.23,28.56-14,0-23.52-6.72-27.77-15.79L242.6,186c2.8,6.16,8.18,10.08,16.69,10.08,10.19,0,16.35-7.5,16.35-17.13v-7.06A23.88,23.88,0,0,1,256.83,181c-14.23,0-27.89-11.31-27.89-29.12m47.26-.11c0-10-7.5-18.14-17.69-18.14-10,0-17.7,8-17.7,18.14S248.54,170,258.51,170c10.19,0,17.69-8.18,17.69-18.26"></path><rect x="298.07" y="98.12" width="11.98" height="81.76"></rect><path d="M318,151.88A29.07,29.07,0,1,1,347,181a28.83,28.83,0,0,1-29-29.12m46.26,0C364.21,142,356.59,134,347,134s-17.14,8.07-17.14,17.92S337.33,169.8,347,169.8s17.25-8.06,17.25-17.92"></path><path d="M395.71,172.27v7.61H384V98.12h11.87v33.27a23.75,23.75,0,0,1,18.59-8.63c14.67,0,27.89,11.2,27.89,29.12S428.75,181,414.52,181c-7.5,0-14.67-3.24-18.81-8.73m34.72-20.5c0-10.19-7.73-18.14-17.7-18.14s-17.58,8.17-17.58,18.14S402.65,170,412.73,170s17.7-8.07,17.7-18.26"></path><path d="M447.46,151.88c0-17.92,13.33-29.12,28-29.12,7.39,0,14.45,3.25,18.59,8.4v-7.28h12v56h-12v-7.73a23.8,23.8,0,0,1-18.7,8.85c-14.23,0-27.89-11.31-27.89-29.12m47.26-.11c0-10-7.5-18.14-17.69-18.14-10,0-17.7,8-17.7,18.14S467.06,170,477,170c10.19,0,17.69-8.18,17.69-18.26"></path><rect x="516.54" y="98.12" width="11.98" height="81.76"></rect><path d="M0,147.16H16.35v-49H0Zm65.4,32.73H81.76V130.83H65.4Zm98.11-32.73h16.35v-49H163.51ZM0,81.76H16.35V0H0Zm32.7,0H49.05V0H32.7Zm32.7,0H81.76V0H65.4ZM98.11,179.9h16.35V98.14H98.11Zm32.7-98h16.35V.13H130.81Z"></path></g></symbol>
+</svg>
+
+<a class="sr skip" href="#main">Skip to content</a>
+
+<main id="main">
+
+  <!-- Hero: search, popular tasks, most used -->
+  <section class="hero on-dark" aria-labelledby="heroTitle">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">D365 Training Hub</p>
+        <h1 id="heroTitle"><span class="l">Every D365 process.</span> <span class="l">Step by step</span></h1>
+        <p class="lead">Find the procedure guide, quick reference, recording or template for the task in front of you. Every resource is checked against the live system and owned by a process expert.</p>
+        <div class="search" id="heroSearch" role="search">
+          <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
+          <label class="sr" for="heroQ">Search the training library</label>
+          <input id="heroQ" type="search" placeholder="Search by task, menu or code, e.g. vendor invoice" autocomplete="off">
+          <button class="btn primary" type="button" id="heroGo" aria-label="Search"><span class="btn-label" aria-hidden="true">Search</span><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        </div>
+        <div class="popular">
+          <span class="lbl">Popular</span>
+          <button class="chip-dark" type="button" data-q="general journal">Post a general journal</button>
+          <button class="chip-dark" type="button" data-q="purchase requisition">Create a purchase requisition</button>
+          <button class="chip-dark" type="button" data-q="expense report">Submit an expense report</button>
+          <button class="chip-dark" type="button" data-q="work item">Approve a work item</button>
+          <button class="chip-dark" type="button" data-q="month-end close">Month-end close</button>
+        </div>
+      </div>
+
+      <aside class="top" aria-labelledby="topTitle">
+        <div class="top-head">
+          <h2 id="topTitle">Most used</h2>
+          <a class="more" href="#library">Full library<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </div>
+        <ol class="top-list" id="topList"></ol>
+      </aside>
+    </div>
+  </section>
+
+  <!-- The four mandatory formats -->
+  <section class="pillars" aria-labelledby="typesTitle">
+    <div class="wrap">
+      <h2 class="sr" id="typesTitle">Resource types</h2>
+      <div class="pillar-grid">
+        <a class="pillar" href="#library" data-type="pg">
+          <span class="pillar-top"><span class="tile tone-sky"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg></span><span class="abbr">PG</span></span>
+          <h3>Procedure guides</h3>
+          <p>Step-by-step instructions for each D365 task, with screenshots and the exact menu path.</p>
+          <span class="pillar-foot"><span>Avg. 7 min read</span><b>Browse<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></b></span>
+        </a>
+        <a class="pillar" href="#library" data-type="qrg">
+          <span class="pillar-top"><span class="tile tone-violet"><svg class="ic" aria-hidden="true"><use href="#i-file-text"/></svg></span><span class="abbr">QRG</span></span>
+          <h3>Quick reference guides</h3>
+          <p>One or two pages per topic. Keep one open beside D365 while you work.</p>
+          <span class="pillar-foot"><span>1–2 pages</span><b>Browse<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></b></span>
+        </a>
+        <a class="pillar" href="#library" data-type="rec">
+          <span class="pillar-top"><span class="tile tone-peach"><svg class="ic" aria-hidden="true"><use href="#i-video"/></svg></span><span class="abbr">REC</span></span>
+          <h3>Recordings</h3>
+          <p>Narrated walkthroughs and session recaps, split into chapters so you can jump to your step.</p>
+          <span class="pillar-foot"><span>5–45 min</span><b>Watch<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></b></span>
+        </a>
+        <a class="pillar" href="#library" data-type="tpl">
+          <span class="pillar-top"><span class="tile tone-mint"><svg class="ic" aria-hidden="true"><use href="#i-sheet"/></svg></span><span class="abbr">TPL</span></span>
+          <h3>Templates</h3>
+          <p>The current upload templates for D365, each paired with the guide that explains it.</p>
+          <span class="pillar-foot"><span>.xlsx · versioned</span><b>Browse<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></b></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process areas -->
+  <section class="areas" aria-labelledby="areasTitle">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><p class="eyebrow">Process areas</p><h2 id="areasTitle">Start from the part of D365 you work in</h2></div>
+      </div>
+      <div class="area-grid" id="areaGrid"></div>
+    </div>
+  </section>
+
+  <!-- Library explorer -->
+  <section class="band section" id="library" aria-labelledby="libTitle">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><p class="eyebrow">Training library</p><h2 id="libTitle">Find the right resource</h2></div>
+        <a class="more" data-link="library">Open the full library<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Resource type" id="typeTabs"></div>
+      <div class="lib-tools">
+        <div class="field grow">
+          <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
+          <label class="sr" for="libQ">Filter by keyword or code</label>
+          <input id="libQ" type="search" placeholder="Filter by keyword or code" autocomplete="off">
+        </div>
+        <div class="field sel">
+          <label class="sr" for="libArea">Process area</label>
+          <select id="libArea"><option value="">All process areas</option></select>
+          <svg class="ic" aria-hidden="true"><use href="#i-chev-d"/></svg>
+        </div>
+        <div class="field sel">
+          <label class="sr" for="libSort">Sort by</label>
+          <select id="libSort">
+            <option value="updated">Newest first</option>
+            <option value="views">Most used</option>
+            <option value="az">Title A–Z</option>
+          </select>
+          <svg class="ic" aria-hidden="true"><use href="#i-chev-d"/></svg>
+        </div>
+      </div>
+      <div class="lib-status">
+        <span id="libCount" aria-live="polite"></span>
+        <button class="linkbtn" id="libClear" type="button" hidden>Clear filters</button>
+        <a class="more" id="libSearchAll" hidden>Search all of SharePoint<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="lib-list" id="libList" role="tabpanel" aria-labelledby="libTitle"></div>
+      <div class="lib-more"><button class="btn secondary" id="libMore" type="button">Show more</button></div>
+    </div>
+  </section>
+
+  <!-- Learning paths + live sessions -->
+  <section class="section" id="paths" aria-labelledby="pathsTitle">
+    <div class="wrap split">
+      <div>
+        <div class="sec-head">
+          <div><p class="eyebrow">Learning paths</p><h2 id="pathsTitle">Learn your role in the right order</h2></div>
+          <a class="more" data-link="learningPaths">All paths<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </div>
+        <div class="roles" role="tablist" aria-label="Role" id="roleTabs"></div>
+        <div class="path" id="pathPanel" role="tabpanel"></div>
+      </div>
+
+      <aside class="card" aria-labelledby="sessTitle">
+        <h2 class="card-h" id="sessTitle">Live sessions</h2>
+        <ul class="sess">
+          <li>
+            <span class="date" aria-hidden="true"><b>29</b><span>Oct</span></span>
+            <span class="sess-main"><b>AP office hours</b><small>Thu 29 Oct · 10:00–10:30 AEDT · Teams</small></span>
+            <a class="btn secondary sm" data-link="sessions" aria-label="RSVP to AP office hours on 29 October">RSVP</a>
+          </li>
+          <li>
+            <span class="date" aria-hidden="true"><b>04</b><span>Nov</span></span>
+            <span class="sess-main"><b>Month-end close refresher</b><small>Wed 4 Nov · 14:00–15:00 AEDT · Teams</small></span>
+            <a class="btn secondary sm" data-link="sessions" aria-label="RSVP to the month-end close refresher on 4 November">RSVP</a>
+          </li>
+          <li>
+            <span class="date" aria-hidden="true"><b>11</b><span>Nov</span></span>
+            <span class="sess-main"><b>D365 orientation for new starters</b><small>Wed 11 Nov · 09:30–11:00 AEDT · Sydney + Teams</small></span>
+            <a class="btn secondary sm" data-link="sessions" aria-label="RSVP to D365 orientation for new starters on 11 November">RSVP</a>
+          </li>
+        </ul>
+        <a class="more card-foot" data-link="sessions">Training calendar<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Templates band -->
+  <section id="templates" aria-labelledby="tplTitle">
+    <div class="wrap">
+      <div class="tband on-dark">
+        <div>
+          <p class="eyebrow">Templates</p>
+          <h2 id="tplTitle">Download fresh. Upload clean</h2>
+          <p class="lead">D365 templates change when the system changes. Download the current version here every time, never from your desktop or an old email.</p>
+          <ol class="tsteps">
+            <li><span class="n">1</span><div><b>Download the current version</b><span>Each card shows the template version and the date it was last tested in D365.</span></div></li>
+            <li><span class="n">2</span><div><b>Complete it with the column guide</b><span>The first sheet explains every column and the values D365 accepts.</span></div></li>
+            <li><span class="n">3</span><div><b>Import it with the paired guide</b><span>Follow the procedure guide and check the staging results before you finish.</span></div></li>
+          </ol>
+        </div>
+        <div class="tcards">
+          <article class="tcard">
+            <span class="tile tone-mint"><svg class="ic" aria-hidden="true"><use href="#i-sheet"/></svg></span>
+            <div class="tcard-main">
+              <h3>General journal upload</h3>
+              <p class="sub">TPL-GL-002 · v5 · Data entity: General journal</p>
+              <span class="tested"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Tested in D365 on 15 Oct 2026</span>
+            </div>
+            <a class="btn secondary sm" data-doc="TPL-GL-002" aria-label="Download General journal upload, TPL-GL-002 version 5"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>Download</a>
+          </article>
+          <article class="tcard">
+            <span class="tile tone-mint"><svg class="ic" aria-hidden="true"><use href="#i-sheet"/></svg></span>
+            <div class="tcard-main">
+              <h3>Purchase requisition lines</h3>
+              <p class="sub">TPL-PRO-002 · v2 · Open in Excel</p>
+              <span class="tested"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Tested in D365 on 12 Oct 2026</span>
+            </div>
+            <a class="btn secondary sm" data-doc="TPL-PRO-002" aria-label="Download Purchase requisition lines, TPL-PRO-002 version 2"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>Download</a>
+          </article>
+          <article class="tcard">
+            <span class="tile tone-mint"><svg class="ic" aria-hidden="true"><use href="#i-sheet"/></svg></span>
+            <div class="tcard-main">
+              <h3>Vendor master upload</h3>
+              <p class="sub">TPL-AP-001 · v3 · Data entity: Vendors V2</p>
+              <span class="tested"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Tested in D365 on 18 Sep 2026</span>
+            </div>
+            <a class="btn secondary sm" data-doc="TPL-AP-001" aria-label="Download Vendor master upload, TPL-AP-001 version 3"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>Download</a>
+          </article>
+          <a class="more tband-more" href="#library" data-type="tpl">All templates<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What's changed + Get started -->
+  <section class="section" id="changes" aria-labelledby="chgTitle">
+    <div class="wrap split">
+      <div>
+        <div class="sec-head">
+          <div><p class="eyebrow">What's changed</p><h2 id="chgTitle">Recent changes to D365 processes</h2></div>
+          <a class="more" data-link="changes">All change notices<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </div>
+        <ol>
+          <li class="chg">
+            <time datetime="2026-10-20">20 Oct</time>
+            <div>
+              <span class="tag">Accounts payable · CN-2026-031</span>
+              <h3>Second approver for invoices over AUD 50,000</h3>
+              <p>Vendor invoices above AUD 50,000 now route to a second approver in workflow. The invoice guide, the approver guide and the workflow statuses QRG are updated.</p>
+              <div class="links"><a class="doc-chip" data-doc="PG-AP-014"><i class="t-pg"></i>PG-AP-014 v3.2</a><a class="doc-chip" data-doc="PG-WF-003"><i class="t-pg"></i>PG-WF-003 v2.4</a><a class="doc-chip" data-doc="QRG-WF-001"><i class="t-qrg"></i>QRG-WF-001 v1.1</a></div>
+            </div>
+          </li>
+          <li class="chg">
+            <time datetime="2026-10-15">15 Oct</time>
+            <div>
+              <span class="tag">General ledger · CN-2026-029</span>
+              <h3>New journal name for accruals</h3>
+              <p>Use the ACCR journal name for every accrual journal from the October close. The general journal template moves to version 5 with the new value in its column guide.</p>
+              <div class="links"><a class="doc-chip" data-doc="PG-GL-006"><i class="t-pg"></i>PG-GL-006 v4.1</a><a class="doc-chip" data-doc="TPL-GL-002"><i class="t-tpl"></i>TPL-GL-002 v5</a><a class="doc-chip" data-doc="REC-GL-004"><i class="t-rec"></i>REC-GL-004</a></div>
+            </div>
+          </li>
+          <li class="chg">
+            <time datetime="2026-10-12">12 Oct</time>
+            <div>
+              <span class="tag">Procurement · CN-2026-027</span>
+              <h3>Capital purchases need a project ID</h3>
+              <p>Requisitions for capital purchases must reference a project ID before you submit them. Requisitions without one return to the requester.</p>
+              <div class="links"><a class="doc-chip" data-doc="PG-PRO-002"><i class="t-pg"></i>PG-PRO-002 v3.1</a><a class="doc-chip" data-doc="TPL-PRO-002"><i class="t-tpl"></i>TPL-PRO-002 v2</a></div>
+            </div>
+          </li>
+          <li class="chg">
+            <time datetime="2026-10-06">06 Oct</time>
+            <div>
+              <span class="tag">Platform · CN-2026-025</span>
+              <h3>Grid filter pane looks different</h3>
+              <p>The October service update redesigned the grid filter pane. Your saved views and keyboard shortcuts work as before.</p>
+              <div class="links"><a class="doc-chip" data-doc="QRG-FND-002"><i class="t-qrg"></i>QRG-FND-002 v1.5</a></div>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <aside class="start" aria-labelledby="startTitle">
+        <p class="eyebrow">New to D365?</p>
+        <h2 id="startTitle">Get set up in four steps</h2>
+        <ol class="vsteps">
+          <li><span class="n">1</span><div><b>Request your D365 access</b><span>Your manager approves the request. Your security role decides which menus you see.</span></div></li>
+          <li><span class="n">2</span><div><b>Complete D365 Fundamentals</b><span>45 minutes on navigation, filters, workspaces and favorites.</span></div></li>
+          <li><span class="n">3</span><div><b>Follow your role's learning path</b><span>Guides, QRGs and recordings in the order you need them.</span></div></li>
+          <li><span class="n">4</span><div><b>Practice in the training environment</b><span>Try each task there first. Nothing you do reaches live data.</span></div></li>
+        </ol>
+        <a class="btn primary" data-doc="REC-FND-001">Start D365 Fundamentals</a>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Support -->
+  <section class="band section" id="support" aria-labelledby="supTitle">
+    <div class="wrap split">
+      <div>
+        <div class="sec-head">
+          <div><p class="eyebrow">Support</p><h2 id="supTitle">Questions people ask most</h2></div>
+          <a class="more" data-link="glossary">D365 glossary<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </div>
+        <div class="faq">
+          <details open>
+            <summary>Which copy of a guide should I trust?<span class="pm"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span></summary>
+            <p class="ans">The one on this site. Each guide shows its version and last review date on the first page. Downloaded or printed copies are not updated when the process changes.</p>
+          </details>
+          <details>
+            <summary>The guide shows a menu I can't see in D365<span class="pm"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span></summary>
+            <p class="ans">Your security role decides which menus appear. Check the "Who this is for" box at the top of the guide, then raise an access request if your role needs it.</p>
+          </details>
+          <details>
+            <summary>My template import failed. What should I check?<span class="pm"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span></summary>
+            <p class="ans">Open the import job in Data management and review the staging errors row by row. Most failures come from a value the column guide doesn't allow. If the error remains, raise a D365 support request and attach the file.</p>
+          </details>
+          <details>
+            <summary>Where can I practice without touching live data?<span class="pm"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span></summary>
+            <p class="ans">Use the D365 training environment. Nothing you do there reaches live data, and every learning path links to it.</p>
+          </details>
+          <details>
+            <summary>How do I report an error or ask for a new guide?<span class="pm"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span></summary>
+            <p class="ans">Use the suggestion form on this page. The training team logs every request against the guide's process owner and replies within five business days.</p>
+          </details>
+        </div>
+      </div>
+
+      <aside class="card" aria-labelledby="helpTitle">
+        <h2 class="card-h" id="helpTitle">Still stuck?</h2>
+        <ul class="help">
+          <li><a data-link="supportPortal"><span class="tile sm tone-sky100"><svg class="ic" aria-hidden="true"><use href="#i-support"/></svg></span><span><b>Raise a D365 support request</b><small>IT service portal · errors and access</small></span><svg class="ic chev" aria-hidden="true"><use href="#i-chev-r"/></svg></a></li>
+          <li><a data-link="community"><span class="tile sm tone-sky100"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg></span><span><b>Ask the D365 community</b><small>Teams · D365 Users channel</small></span><svg class="ic chev" aria-hidden="true"><use href="#i-chev-r"/></svg></a></li>
+          <li><a data-link="officeHours"><span class="tile sm tone-sky100"><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg></span><span><b>Book office hours</b><small>Thursdays · 30 minutes with a process expert</small></span><svg class="ic chev" aria-hidden="true"><use href="#i-chev-r"/></svg></a></li>
+        </ul>
+        <div class="suggest">
+          <b>Suggest a guide or report an error</b>
+          <p>Name the task, the D365 menu and what's missing or wrong. It takes two minutes.</p>
+          <a class="btn primary sm" data-link="suggestForm"><svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg>Open the suggestion form</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer class="foot on-dark">
+  <div class="wrap">
+    <div class="foot-in">
+      <div>
+        <svg class="logo" viewBox="0 0 668.78 207.1" style="color:var(--white)" role="img" aria-label="WiseTech Global"><use href="#logo-wtg"/></svg>
+        <h2>D365 Training Hub</h2>
+        <p>Procedure guides, quick reference guides, recordings and templates for Dynamics 365 at WiseTech Global. Maintained by the D365 Training team and reviewed at least every six months.</p>
+      </div>
+      <nav aria-label="Footer">
+        <ul>
+          <li><a data-link="contribute">Contribute a guide</a></li>
+          <li><a data-link="standards">Authoring standards</a></li>
+          <li><a data-link="trainingEnvironment">Training environment</a></li>
+          <li><a data-link="glossary">D365 glossary</a></li>
+          <li><a data-link="accessibility">Accessibility</a></li>
+          <li><a data-link="siteContents">Site contents</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="foot-base"><span>© 2026 WiseTech Global</span><span>Content owner: D365 Training team</span></div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  /* =====================================================================
+     SETTINGS: set these once before uploading the page to SharePoint
+     ===================================================================== */
+  const CONFIG = {
+    // Full URL of the D365 Training Hub site, with no trailing slash
+    siteUrl: "https://YOUR-TENANT.sharepoint.com/sites/D365TrainingHub",
+
+    // Where links open. "_top" replaces the whole SharePoint page; "_blank" opens a new tab.
+    // If links do nothing after upload, switch this to "_blank".
+    linkTarget: "_top",
+
+    // Pages and libraries inside the site (each starts with /)
+    sitePaths: {
+      library: "/Training%20Library/Forms/AllItems.aspx",
+      learningPaths: "/SitePages/Learning-paths.aspx",
+      changes: "/SitePages/Whats-changed.aspx",
+      sessions: "/SitePages/Training-sessions.aspx",
+      glossary: "/SitePages/D365-glossary.aspx",
+      contribute: "/SitePages/Contribute-a-guide.aspx",
+      standards: "/SitePages/Authoring-standards.aspx",
+      accessibility: "/SitePages/Accessibility.aspx",
+      siteContents: "/_layouts/15/viewlsts.aspx",
+      search: "/_layouts/15/search.aspx/siteall?q="
+    },
+
+    // Links outside the site: paste the full URL of each one
+    external: {
+      supportPortal: "",       // IT service portal, D365 request form
+      community: "",           // Teams channel link for D365 Users
+      officeHours: "",         // Office hours booking page
+      suggestForm: "",         // Microsoft Forms link for suggestions
+      trainingEnvironment: ""  // D365 training environment URL
+    }
+  };
+
+  /* =====================================================================
+     CONTENT: sample data until the real library export replaces it.
+     Each resource can take a direct link as a 10th value; without one,
+     its button searches the site for the document code.
+     ===================================================================== */
+  const AREAS = {
+    fnd: { name: "D365 fundamentals", tasks: "Navigation · Filters · Workspaces", icon: "i-browser" },
+    gl: { name: "General ledger", tasks: "Journals · Period close · Dimensions", icon: "i-coins" },
+    ap: { name: "Accounts payable", tasks: "Vendors · Invoices · Payments", icon: "i-receipt" },
+    ar: { name: "Accounts receivable", tasks: "Customers · Invoicing · Settlement", icon: "i-wallet" },
+    pro: { name: "Procurement", tasks: "Requisitions · Orders · Receipts", icon: "i-cart" },
+    exp: { name: "Expenses", tasks: "Expense reports · Receipts · Policy", icon: "i-card" },
+    fa: { name: "Fixed assets", tasks: "Acquisition · Depreciation · Disposal", icon: "i-desk" },
+    cb: { name: "Cash and bank", tasks: "Statements · Reconciliation", icon: "i-bank" },
+    pma: { name: "Project accounting", tasks: "Projects · Categories · Hours", icon: "i-briefcase" },
+    bud: { name: "Budgeting", tasks: "Budget register · Control", icon: "i-pie" },
+    rpt: { name: "Financial reporting", tasks: "Financial reports · Inquiries", icon: "i-chart" },
+    wf: { name: "Workflow and approvals", tasks: "Work items · Delegation", icon: "i-flow" }
+  };
+
+  const TYPES = {
+    pg: { tab: "Procedure guides", short: "PG", badge: "PG", action: "Open", icon: "i-file-text" },
+    qrg: { tab: "Quick reference", short: "QRG", badge: "QRG", action: "Open", icon: "i-file-text" },
+    rec: { tab: "Recordings", short: "REC", badge: "Recording", action: "Watch", icon: "i-play" },
+    tpl: { tab: "Templates", short: "TPL", badge: "Template", action: "Download", icon: "i-download" }
+  };
+
+  // [code, type, area, title, detail line, length, version, last updated, views, optional direct link]
+  const ROWS = [
+    ["PG-FND-001", "pg", "fnd", "Navigate D365: workspaces, filters and favorites", "Dashboard › Workspaces", "9 steps", "v2.0", "2026-09-02", 1840],
+    ["PG-GL-006", "pg", "gl", "Create and post a general journal", "General ledger › Journal entries › General journals", "11 steps", "v4.1", "2026-10-15", 1320],
+    ["PG-GL-011", "pg", "gl", "Reverse a posted journal entry", "General ledger › Inquiries and reports › Voucher transactions", "7 steps", "v2.3", "2026-08-21", 610],
+    ["PG-GL-014", "pg", "gl", "Complete the month-end close checklist", "General ledger › Period close › Financial period close", "15 steps", "v3.0", "2026-10-02", 980],
+    ["PG-AP-003", "pg", "ap", "Create a new vendor", "Accounts payable › Vendors › All vendors", "10 steps", "v2.6", "2026-09-18", 870],
+    ["PG-AP-014", "pg", "ap", "Process a vendor invoice", "Accounts payable › Invoices › Pending vendor invoices", "12 steps", "v3.2", "2026-10-20", 2210],
+    ["PG-AP-021", "pg", "ap", "Create a vendor payment proposal", "Accounts payable › Payments › Vendor payment journal", "13 steps", "v1.8", "2026-09-09", 740],
+    ["PG-AR-008", "pg", "ar", "Create a free text invoice", "Accounts receivable › Invoices › All free text invoices", "9 steps", "v2.2", "2026-08-28", 690],
+    ["PG-AR-012", "pg", "ar", "Record and settle a customer payment", "Accounts receivable › Payments › Customer payment journal", "11 steps", "v2.0", "2026-10-09", 560],
+    ["PG-PRO-002", "pg", "pro", "Create a purchase requisition", "Procurement and sourcing › Purchase requisitions › All purchase requisitions", "8 steps", "v3.1", "2026-10-12", 1960],
+    ["PG-PRO-009", "pg", "pro", "Record a product receipt", "Procurement and sourcing › Purchase orders › All purchase orders", "6 steps", "v1.4", "2026-08-14", 520],
+    ["PG-EXP-001", "pg", "exp", "Create and submit an expense report", "Expense management › My expenses › Expense reports", "10 steps", "v2.9", "2026-10-06", 2480],
+    ["PG-FA-004", "pg", "fa", "Acquire a fixed asset", "Fixed assets › Fixed assets › Fixed assets", "9 steps", "v1.6", "2026-07-30", 310],
+    ["PG-CB-002", "pg", "cb", "Reconcile a bank statement", "Cash and bank management › Bank statement reconciliation › Bank statements", "12 steps", "v2.1", "2026-09-25", 450],
+    ["PG-PMA-005", "pg", "pma", "Create a project and set up categories", "Project management and accounting › Projects › All projects", "10 steps", "v1.3", "2026-08-07", 380],
+    ["PG-WF-003", "pg", "wf", "Approve, reject or delegate a work item", "Common › Work items › Work items assigned to me", "6 steps", "v2.4", "2026-10-20", 1650],
+    ["PG-BUD-002", "pg", "bud", "Enter a budget register entry", "Budgeting › Budget register entries", "8 steps", "v1.2", "2026-09-04", 270],
+    ["PG-RPT-001", "pg", "rpt", "Run a financial report", "General ledger › Inquiries and reports › Financial reports", "7 steps", "v1.9", "2026-09-30", 590],
+    ["QRG-FND-002", "qrg", "fnd", "Keyboard shortcuts and filter syntax", "2 pages · PDF", "2 pages", "v1.5", "2026-10-06", 1430],
+    ["QRG-GL-003", "qrg", "gl", "Main accounts and financial dimensions", "1 page · PDF", "1 page", "v2.0", "2026-09-11", 880],
+    ["QRG-GL-007", "qrg", "gl", "Month-end close calendar", "1 page · PDF", "1 page", "v4.0", "2026-10-01", 760],
+    ["QRG-AP-005", "qrg", "ap", "Invoice matching statuses explained", "1 page · PDF", "1 page", "v1.7", "2026-10-20", 940],
+    ["QRG-PRO-004", "qrg", "pro", "Purchase order statuses at a glance", "1 page · PDF", "1 page", "v1.3", "2026-08-19", 650],
+    ["QRG-EXP-002", "qrg", "exp", "Expense categories and receipt rules", "2 pages · PDF", "2 pages", "v3.0", "2026-09-29", 1720],
+    ["QRG-WF-001", "qrg", "wf", "Workflow statuses and what they mean", "1 page · PDF", "1 page", "v1.1", "2026-10-20", 580],
+    ["REC-FND-001", "rec", "fnd", "D365 orientation: your first 30 minutes", "6 chapters · 28:14", "28 min", "v1.0", "2026-08-25", 2050],
+    ["REC-AP-006", "rec", "ap", "Vendor invoice to payment, end to end", "5 chapters · 18:42", "19 min", "v2.0", "2026-10-14", 1110],
+    ["REC-GL-004", "rec", "gl", "General journals, start to finish", "4 chapters · 12:05", "12 min", "v2.0", "2026-10-15", 820],
+    ["REC-PRO-003", "rec", "pro", "From requisition to purchase order", "5 chapters · 15:30", "16 min", "v1.1", "2026-09-16", 990],
+    ["REC-AR-002", "rec", "ar", "Office hours recap: customer settlements", "8 chapters · 41:20", "41 min", "v1.0", "2026-09-24", 300],
+    ["TPL-GL-002", "tpl", "gl", "General journal upload", "Data entity: General journal · .xlsx", "Excel", "v5", "2026-10-15", 1260],
+    ["TPL-AP-001", "tpl", "ap", "Vendor master upload", "Data entity: Vendors V2 · .xlsx", "Excel", "v3", "2026-09-18", 540],
+    ["TPL-AR-001", "tpl", "ar", "Customer master upload", "Data entity: Customers V3 · .xlsx", "Excel", "v2", "2026-08-28", 420],
+    ["TPL-FA-001", "tpl", "fa", "Fixed asset bulk upload", "Data entity: Fixed assets V2 · .xlsx", "Excel", "v2", "2026-07-30", 210],
+    ["TPL-BUD-001", "tpl", "bud", "Budget register upload", "Data entity: Budget register entries · .xlsx", "Excel", "v1", "2026-09-04", 190],
+    ["TPL-PRO-002", "tpl", "pro", "Purchase requisition lines", "Open in Excel · .xlsx", "Excel", "v2", "2026-10-12", 470]
+  ];
+
+  const PATHS = {
+    ap: { name: "Accounts payable", who: "For anyone who sets up vendors, enters invoices or runs payments.", time: "About 1 h 50 min", steps: ["REC-FND-001", "PG-AP-003", "PG-AP-014", "QRG-AP-005", "PG-AP-021", "REC-AP-006"] },
+    ar: { name: "Accounts receivable", who: "For anyone who invoices customers or applies their payments.", time: "About 1 h 40 min", steps: ["REC-FND-001", "QRG-GL-003", "PG-AR-008", "PG-AR-012", "REC-AR-002"] },
+    gl: { name: "General ledger", who: "For accountants who post journals, reconcile and close the period.", time: "About 2 h 30 min", steps: ["REC-FND-001", "QRG-GL-003", "PG-GL-006", "TPL-GL-002", "REC-GL-004", "PG-GL-011", "PG-GL-014", "QRG-GL-007"] },
+    req: { name: "Requester", who: "For everyone who buys goods and services or claims expenses.", time: "About 1 h 10 min", steps: ["PG-FND-001", "PG-PRO-002", "REC-PRO-003", "QRG-PRO-004", "PG-EXP-001", "QRG-EXP-002"] },
+    appr: { name: "Approver", who: "For managers who approve requisitions, invoices and expense reports.", time: "About 40 min", steps: ["PG-FND-001", "PG-WF-003", "QRG-WF-001", "QRG-EXP-002"] }
+  };
+
+  /* ===================================================================== */
+
+  const ITEMS = ROWS.map(([id, type, area, title, sub, len, ver, updated, views, url]) => ({ id, type, area, title, sub, len, ver, updated: new Date(updated + "T00:00:00"), views, url }));
+  const BY_ID = Object.fromEntries(ITEMS.map((it) => [it.id, it]));
+
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const icon = (id, cls = "ic") => `<svg class="${cls}" aria-hidden="true"><use href="#${id}"/></svg>`;
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const fmtDate = (d) => `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  const isRecent = (d) => (Date.now() - d) / 86400000 <= 7;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Links ---------- */
+  const site = CONFIG.siteUrl.replace(/\/+$/, "");
+  const searchUrl = (q) => `${site}${CONFIG.sitePaths.search}${encodeURIComponent(q)}`;
+  const docUrl = (id) => (BY_ID[id] && BY_ID[id].url) || searchUrl(`"${id}"`);
+  function linkUrl(key) {
+    if (CONFIG.sitePaths[key]) return site + CONFIG.sitePaths[key];
+    if (CONFIG.external[key]) return CONFIG.external[key];
+    return "";
+  }
+  const missing = new Set();
+  function setLink(a, url, key) {
+    if (!url) {
+      a.href = "#";
+      a.title = "Link not set yet";
+      missing.add(key);
+      return;
+    }
+    a.href = url;
+    a.target = CONFIG.linkTarget;
+    if (CONFIG.linkTarget === "_blank") a.rel = "noopener";
+  }
+  function applyLinks(root = document) {
+    $$("a[data-link]", root).forEach((a) => setLink(a, linkUrl(a.dataset.link), a.dataset.link));
+    $$("a[data-doc]", root).forEach((a) => setLink(a, docUrl(a.dataset.doc), a.dataset.doc));
+  }
+
+  /* ---------- Most used ---------- */
+  $("#topList").innerHTML = [...ITEMS].sort((a, b) => b.views - a.views).slice(0, 5).map((it, i) => `
+    <li>
+      <span class="rank">${String(i + 1).padStart(2, "0")}</span>
+      <div>
+        <a class="top-t" data-doc="${it.id}">${esc(it.title)}</a>
+        <span class="top-m"><span class="badge t-${it.type}">${TYPES[it.type].badge}</span><span class="code">${it.id} · ${esc(it.len)}</span></span>
+      </div>
+    </li>`).join("");
+
+  /* ---------- Process areas ---------- */
+  $("#areaGrid").innerHTML = Object.entries(AREAS).map(([key, a]) => `
+    <button class="area" type="button" data-area="${key}">
+      <span class="tile sm tone-sky100">${icon(a.icon)}</span>
+      <span class="area-txt"><b>${esc(a.name)}</b><small>${esc(a.tasks)}</small></span>
+      ${icon("i-chev-r", "ic chev")}
+    </button>`).join("");
+  $("#libArea").insertAdjacentHTML("beforeend", Object.entries(AREAS).map(([key, a]) => `<option value="${key}">${esc(a.name)}</option>`).join(""));
+
+  /* ---------- Library ---------- */
+  const PAGE = 8;
+  const lib = { type: "all", area: "", q: "", sort: "updated", limit: PAGE };
+
+  function matches(it, withType) {
+    if (withType && lib.type !== "all" && it.type !== lib.type) return false;
+    if (lib.area && it.area !== lib.area) return false;
+    if (lib.q) {
+      const hay = `${it.id} ${it.title} ${it.sub} ${AREAS[it.area].name} ${TYPES[it.type].tab}`.toLowerCase();
+      return lib.q.toLowerCase().split(/\s+/).filter(Boolean).every((term) => hay.includes(term));
+    }
+    return true;
+  }
+
+  function renderTabs() {
+    const counts = { all: 0, pg: 0, qrg: 0, rec: 0, tpl: 0 };
+    ITEMS.forEach((it) => { if (matches(it, false)) { counts.all++; counts[it.type]++; } });
+    const tabs = [["all", "All", "All"], ...Object.entries(TYPES).map(([k, t]) => [k, t.tab, t.short])];
+    $("#typeTabs").innerHTML = tabs.map(([k, label, short]) => `
+      <button class="tab" type="button" role="tab" id="tab-${k}" data-tab="${k}" aria-selected="${lib.type === k}" tabindex="${lib.type === k ? 0 : -1}" aria-controls="libList" aria-label="${esc(label)}, ${counts[k]}"><span class="tl">${esc(label)}</span><span class="ts">${short}</span> <span class="ct">${counts[k]}</span></button>`).join("");
+  }
+
+  function rowHTML(it) {
+    const t = TYPES[it.type];
+    return `
+      <article class="row" role="listitem">
+        <span class="badge t-${it.type}">${t.badge}</span>
+        <div class="row-main">
+          <h3><a data-doc="${it.id}">${esc(it.title)}</a>${isRecent(it.updated) ? ' <span class="flag">Updated<span class="sr"> in the last 7 days</span></span>' : ""}</h3>
+          <p class="sub">${esc(it.sub)}</p>
+        </div>
+        <span class="row-area">${esc(AREAS[it.area].name)}</span>
+        <span class="row-when"><span class="code">${it.id} · ${it.ver}</span><span>${fmtDate(it.updated)}</span></span>
+        <a class="btn secondary sm" data-doc="${it.id}" aria-label="${t.action} ${esc(it.title)}">${icon(t.icon)}${t.action}</a>
+      </article>`;
+  }
+
+  function renderLibrary() {
+    renderTabs();
+    const sorters = {
+      updated: (a, b) => b.updated - a.updated || b.views - a.views,
+      views: (a, b) => b.views - a.views,
+      az: (a, b) => a.title.localeCompare(b.title)
+    };
+    const found = ITEMS.filter((it) => matches(it, true)).sort(sorters[lib.sort]);
+    const shown = found.slice(0, lib.limit);
+    const list = $("#libList");
+    list.setAttribute("aria-labelledby", `tab-${lib.type}`);
+    list.innerHTML = found.length
+      ? `<div role="list" style="display:contents">${shown.map(rowHTML).join("")}</div>`
+      : `<div class="lib-empty"><b>No resources match</b>Try another keyword, or clear the filters to see everything.</div>`;
+    const scope = [lib.q ? `for “${esc(lib.q)}”` : "", lib.area ? `in ${esc(AREAS[lib.area].name)}` : ""].filter(Boolean).join(" ");
+    $("#libCount").innerHTML = found.length
+      ? `Showing <b>${shown.length}</b> of <b>${found.length}</b> ${found.length === 1 ? "resource" : "resources"} ${scope}`
+      : `0 resources ${scope}`;
+    $("#libClear").hidden = !(lib.q || lib.area || lib.type !== "all");
+    const all = $("#libSearchAll");
+    all.hidden = !lib.q;
+    if (lib.q) setLink(all, searchUrl(lib.q), "search");
+    $("#libMore").hidden = shown.length >= found.length;
+    if (document.activeElement !== $("#libQ")) $("#libQ").value = lib.q;
+    $("#libArea").value = lib.area;
+    $("#libSort").value = lib.sort;
+    applyLinks(list);
+  }
+
+  function goLibrary(changes) {
+    Object.assign(lib, changes, { limit: PAGE });
+    renderLibrary();
+    $("#library").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    $(`#tab-${lib.type}`).focus({ preventScroll: true });
+  }
+
+  $("#typeTabs").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-tab]");
+    if (!b) return;
+    Object.assign(lib, { type: b.dataset.tab, limit: PAGE });
+    renderLibrary();
+    $(`#tab-${lib.type}`).focus();
+  });
+  $("#libQ").addEventListener("input", (e) => { Object.assign(lib, { q: e.target.value.trim(), limit: PAGE }); renderLibrary(); });
+  $("#libArea").addEventListener("change", (e) => { Object.assign(lib, { area: e.target.value, limit: PAGE }); renderLibrary(); });
+  $("#libSort").addEventListener("change", (e) => { Object.assign(lib, { sort: e.target.value, limit: PAGE }); renderLibrary(); });
+  $("#libMore").addEventListener("click", () => { lib.limit += PAGE; renderLibrary(); });
+  $("#libClear").addEventListener("click", () => { Object.assign(lib, { type: "all", area: "", q: "", limit: PAGE }); $("#heroQ").value = ""; renderLibrary(); });
+  // No <form>: SharePoint's sandbox blocks form submission, so Enter and the button drive the search directly
+  const heroSearch = () => goLibrary({ q: $("#heroQ").value.trim(), type: "all", area: "" });
+  $("#heroQ").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); heroSearch(); } });
+  $("#heroGo").addEventListener("click", heroSearch);
+
+  /* ---------- Learning paths ---------- */
+  let role = "ap";
+  function renderPaths() {
+    $("#roleTabs").innerHTML = Object.entries(PATHS).map(([k, p]) => `
+      <button class="role" type="button" role="tab" id="role-${k}" data-role="${k}" aria-selected="${role === k}" tabindex="${role === k ? 0 : -1}" aria-controls="pathPanel">${esc(p.name)}</button>`).join("");
+    const p = PATHS[role];
+    const steps = p.steps.map((id, i) => {
+      const it = BY_ID[id];
+      return `
+        <li class="pstep">
+          <span class="n">${i + 1}</span>
+          <div class="pstep-main">
+            <a class="t" data-doc="${it.id}">${esc(it.title)}</a>
+            <span class="m"><span class="badge t-${it.type}">${TYPES[it.type].badge}</span><span class="code">${it.id}</span></span>
+          </div>
+          <span class="state">${esc(it.len)}</span>
+        </li>`;
+    }).join("");
+    const panel = $("#pathPanel");
+    panel.setAttribute("aria-labelledby", `role-${role}`);
+    panel.innerHTML = `
+      <div class="path-head">
+        <p>${esc(p.who)}</p>
+        <div class="path-stats"><span><b>${p.steps.length}</b> steps</span><span>${esc(p.time)}</span></div>
+      </div>
+      <ol>${steps}</ol>`;
+    applyLinks(panel);
+  }
+  $("#roleTabs").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-role]");
+    if (!b) return;
+    role = b.dataset.role;
+    renderPaths();
+    $(`#role-${role}`).focus();
+  });
+
+  /* Arrow-key movement inside both tab lists */
+  function arrowTabs(container, selector) {
+    container.addEventListener("keydown", (e) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+      const tabs = $$(selector, container);
+      const i = tabs.indexOf(document.activeElement);
+      if (i < 0) return;
+      e.preventDefault();
+      const next = e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : (i + (e.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+      tabs[next].click();
+    });
+  }
+  arrowTabs($("#typeTabs"), "[data-tab]");
+  arrowTabs($("#roleTabs"), "[data-role]");
+
+  /* ---------- In-page shortcuts into the library ---------- */
+  document.addEventListener("click", (e) => {
+    const typeLink = e.target.closest("[data-type]");
+    if (typeLink) { e.preventDefault(); goLibrary({ type: typeLink.dataset.type, area: "", q: "" }); return; }
+    const areaBtn = e.target.closest("[data-area]");
+    if (areaBtn) { goLibrary({ area: areaBtn.dataset.area, type: "all", q: "" }); return; }
+    const chip = e.target.closest("[data-q]");
+    if (chip) { $("#heroQ").value = chip.dataset.q; goLibrary({ q: chip.dataset.q, type: "all", area: "" }); return; }
+    const unset = e.target.closest('a[href="#"][title="Link not set yet"]');
+    if (unset) e.preventDefault();
+  });
+
+  renderLibrary();
+  renderPaths();
+  applyLinks();
+  if (missing.size) console.warn(`D365 Training Hub: set these links in CONFIG before publishing: ${[...missing].join(", ")}`);
+})();
+</script>
+</body>
+</html>

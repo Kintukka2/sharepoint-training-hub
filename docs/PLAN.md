@@ -167,6 +167,18 @@ Map the crawled properties to refinable managed properties (site-collection sear
 
 Phase 1 ships with native web parts plus PnP Modern Search. It delivers everything on the homepage except the resume card and personal path progress, which arrive with SPFx in phase 2.
 
+**Homepage as a SharePoint HTML page (chosen route).** SharePoint now accepts uploaded HTML pages in Site Pages (preview October 2026, general availability mid-November to late December 2026). The homepage ships that way: [`sharepoint/d365-training-hub.html`](../sharepoint/d365-training-hub.html) is one self-contained file with the brand fonts embedded, every link set from one settings block, and no outside scripts. SharePoint renders it in a sandboxed frame below its own header and navigation, which sets these limits:
+
+| Limit | Effect on the homepage |
+| --- | --- |
+| No data calls or APIs, no browser storage | No personal content: the greeting by name, resume card, path progress and Action required are removed |
+| Content lives in the file | The library list, learning paths, sessions and change notices are data inside the page; refresh them from the library export, or move sessions and change notices to native Events and News pages |
+| Forms cannot submit | Search runs on Enter and the button; suggestions go to a Microsoft Forms link |
+| No comments, likes, news promotion, scheduling or co-authoring | Feedback goes through the suggestion form |
+| Uploaded HTML does not take the site theme | The page carries the WiseTech Global design itself |
+
+PnP Modern Search and SPFx remain the route for a live, personalized library later (phase 2).
+
 **Procedure guides as pages.** "Resume at step 3" and deep links to a single step work best when a PG is a SharePoint page with an anchor per step. Phase 1 keeps PGs as Word and PDF for a fast migration. Phase 2 pilots the ten most-viewed PGs as pages and compares completion and feedback.
 
 ## 8. Authoring standards
