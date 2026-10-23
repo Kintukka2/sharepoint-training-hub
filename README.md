@@ -1,13 +1,13 @@
 # sharepoint-training-hub
 
-Planning and design for the **D365 Training Hub**, WiseTech Global's SharePoint site for Dynamics 365 procedure guides (PGs), quick reference guides (QRGs), recordings and templates.
+Planning and design for the **Atlas Training Hub**, WiseTech Global's SharePoint site for Dynamics 365 procedure guides (PGs), quick reference guides (QRGs), recordings and templates.
 
 Live preview of the homepage: https://claude.ai/artifact/JaF5CzfGopBHiwbvLhaFMm (private; share it from the page's Share menu)
 
 | Path | What it is |
 | --- | --- |
-| [`sharepoint/d365-training-hub.html`](sharepoint/d365-training-hub.html) | **The file to upload.** The homepage as a SharePoint HTML page, with fonts embedded. Built from the source below |
-| [`sharepoint/src/d365-training-hub.html`](sharepoint/src/d365-training-hub.html) | The page source to edit: styles, content data and the settings block |
+| [`sharepoint/atlas-training-hub.html`](sharepoint/atlas-training-hub.html) | **The file to upload.** The homepage as a SharePoint HTML page, with fonts embedded. Built from the source below |
+| [`sharepoint/src/atlas-training-hub.html`](sharepoint/src/atlas-training-hub.html) | The page source to edit: styles, content data and the settings block |
 | [`sharepoint/fonts/`](sharepoint/fonts) | DM Sans and DM Mono (WiseTech Global brand typefaces), Latin subset, WOFF2 |
 | [`tools/build.py`](tools/build.py) | Embeds the fonts and writes the upload file |
 | [`docs/PLAN.md`](docs/PLAN.md) | The plan: outcomes, audiences, resource types, site map, homepage sections, content model, SharePoint build approach, governance, roadmap and open decisions |
@@ -15,18 +15,19 @@ Live preview of the homepage: https://claude.ai/artifact/JaF5CzfGopBHiwbvLhaFMm 
 
 ## Put the homepage on SharePoint
 
-1. The **SETTINGS** block at the top of the script in `sharepoint/src/d365-training-hub.html` already points at the WTG - Atlas site (`https://wisetechglobal.sharepoint.com/sites/Atlas`): the Atlas home page, the D365 User Support Hub, the D365 Procedure Guides library and each guide's PDF. Still to set:
-   - `briefingSessions`, `recordings`, `quickReference` and `templates`: their folder or page paths (they open the Training library until then)
+1. The **SETTINGS** block at the top of the script in `sharepoint/src/atlas-training-hub.html` already points at the WTG - Atlas site (`https://wisetechglobal.sharepoint.com/sites/Atlas`): the Atlas home page, the D365 User Support Hub, the FAQs page, the D365 Procedure Guides and D365 Templates folders, each guide's PDF, and the D365 support form (Microsoft Forms, opens in a new tab). Still to set:
+   - `briefingSessions`, `recordings` and `quickReference`: their folder or page paths (they open the Training library until then)
    - `trainingEnvironment`: the D365 training environment URL (until then, "Put it into practice" opens the recordings)
 2. Build the upload file:
    ```sh
    python3 tools/build.py
    ```
-   For a quick change you can also edit the same SETTINGS block directly in `sharepoint/d365-training-hub.html`.
-3. In SharePoint, go to **Site Pages → Upload → Files**, choose `d365-training-hub.html`, then open it and select **Publish**. (**+ New → HTML page → Upload an HTML file** works too, but opening that screen needs a Microsoft 365 Copilot license.)
+   For a quick change you can also edit the same SETTINGS block directly in `sharepoint/atlas-training-hub.html`.
+3. In SharePoint, go to **Site Pages → Upload → Files**, choose `atlas-training-hub.html`, then open it and select **Publish**. (**+ New → HTML page → Upload an HTML file** works too, but opening that screen needs a Microsoft 365 Copilot license.)
 4. Check on the first upload:
    - Fonts show as DM Sans and DM Mono
    - Links open the whole page, not just the frame. If they do nothing, set `linkTarget` to `"_blank"`
+   - The support form opens. If SharePoint blocks it, a site owner adds `forms.cloud.microsoft` to **Site settings → HTML Field Security**
    - **Make homepage** is offered for the page in Site Pages
    - The page reads well in the SharePoint mobile app
 

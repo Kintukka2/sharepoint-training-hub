@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>D365 Training Hub</title>
+<title>Atlas Training Hub</title>
 <meta name="description" content="Procedure guides, quick reference guides, recordings and templates for Dynamics 365 at WiseTech Global">
 <!-- @fonts: tools/build.py replaces this line with DM Sans and DM Mono embedded as base64 WOFF2 -->
 <style>
-/* D365 Training Hub, SharePoint HTML page.
+/* Atlas Training Hub, SharePoint HTML page.
    SharePoint renders this file in a sandboxed frame below its own header and navigation, so the page carries
    no site chrome. Everything it needs is inside the file: fonts (embedded by the build), styles, icons and script.
    Layout: full-width Midnight hero, a 1200px content well, two-thirds / one-third sections, one WiseTech Blue panel.
@@ -355,6 +355,7 @@ button { cursor: pointer; }
 .pm .ic { width: 16px; height: 16px; transition: transform var(--norm) var(--ease); }
 .faq details[open] .pm .ic { transform: rotate(45deg); }
 .faq .ans { max-width: 68ch; padding: 0 2px 20px; color: var(--muted); }
+.faq .ans a { font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
 .help li { border-top: 1px solid var(--line); }
 .help li:first-child { border-top: 0; }
 .help a { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center; padding-block: 14px; color: var(--text); }
@@ -419,7 +420,7 @@ button { cursor: pointer; }
   <section class="hero on-dark" aria-labelledby="heroTitle">
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow">D365 Training Hub</p>
+        <p class="eyebrow">Atlas Training Hub</p>
         <h1 id="heroTitle"><span class="l">Every D365 process.</span> <span class="l">Step by step</span></h1>
         <p class="lead">Find the procedure guide, quick reference, recording or template for the task in front of you. Every procedure guide has a named Business Process Owner.</p>
         <div class="search" id="heroSearch" role="search">
@@ -574,7 +575,7 @@ button { cursor: pointer; }
       <div>
         <div class="sec-head">
           <div><p class="eyebrow">Support</p><h2 id="supTitle">Questions people ask most</h2></div>
-          <a class="more" data-link="supportHub">All FAQs<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a class="more" data-link="faqs">All FAQs<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         </div>
         <div class="faq">
           <details open>
@@ -587,11 +588,11 @@ button { cursor: pointer; }
           </details>
           <details>
             <summary>A procedure guide looks out of date<span class="pm"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span></summary>
-            <p class="ans">Report it with the D365 issue form on the User Support Hub. Include the guide number, for example PG 301, and what has changed.</p>
+            <p class="ans">Report it with the <a data-link="supportForm">D365 support form</a>. Include the guide number, for example PG 301, and what has changed.</p>
           </details>
           <details>
             <summary>Something in D365 isn't working<span class="pm"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span></summary>
-            <p class="ans">Raise a support request with the D365 issue form on the User Support Hub, whether it's a technical problem or a bug.</p>
+            <p class="ans">Raise a request with the <a data-link="supportForm">D365 support form</a>, whether it's a technical problem or a bug. The <a data-link="supportHub">D365 User Support Hub</a> has everything else you need to get unstuck.</p>
           </details>
           <details>
             <summary>I missed a live session<span class="pm"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span></summary>
@@ -603,9 +604,10 @@ button { cursor: pointer; }
       <aside class="card" aria-labelledby="helpTitle">
         <h2 class="card-h" id="helpTitle">Still stuck?</h2>
         <ul class="help">
-          <li><a data-link="supportHub"><span class="tile sm tone-sky100"><svg class="ic" aria-hidden="true"><use href="#i-support"/></svg></span><span><b>Submit a D365 support request</b><small>D365 issue form · User Support Hub</small></span><svg class="ic chev" aria-hidden="true"><use href="#i-chev-r"/></svg></a></li>
+          <li><a data-link="supportForm"><span class="tile sm tone-sky100"><svg class="ic" aria-hidden="true"><use href="#i-support"/></svg></span><span><b>Submit a D365 support request</b><small>Microsoft Forms · opens in a new tab</small></span><svg class="ic chev" aria-hidden="true"><use href="#i-chev-r"/></svg></a></li>
+          <li><a data-link="supportHub"><span class="tile sm tone-sky100"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg></span><span><b>Visit the D365 User Support Hub</b><small>Support, training and FAQs in one place</small></span><svg class="ic chev" aria-hidden="true"><use href="#i-chev-r"/></svg></a></li>
           <li><a href="#areas"><span class="tile sm tone-sky100"><svg class="ic" aria-hidden="true"><use href="#i-people"/></svg></span><span><b>Find the right Business Process Owner</b><small>Listed by business area</small></span><svg class="ic chev" aria-hidden="true"><use href="#i-chev-r"/></svg></a></li>
-          <li><a data-link="supportHub"><span class="tile sm tone-sky100"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg></span><span><b>Explore the FAQs</b><small>Answers for each process area</small></span><svg class="ic chev" aria-hidden="true"><use href="#i-chev-r"/></svg></a></li>
+          <li><a data-link="faqs"><span class="tile sm tone-sky100"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg></span><span><b>Explore the FAQs</b><small>Answers for each process area</small></span><svg class="ic chev" aria-hidden="true"><use href="#i-chev-r"/></svg></a></li>
           <li><a data-link="home"><span class="tile sm tone-sky100"><svg class="ic" aria-hidden="true"><use href="#i-bell"/></svg></span><span><b>See what's new</b><small>News and updates on the Atlas home page</small></span><svg class="ic chev" aria-hidden="true"><use href="#i-chev-r"/></svg></a></li>
         </ul>
       </aside>
@@ -618,14 +620,16 @@ button { cursor: pointer; }
     <div class="foot-in">
       <div>
         <svg class="logo" viewBox="0 0 668.78 207.1" style="color:var(--white)" role="img" aria-label="WiseTech Global"><use href="#logo-wtg"/></svg>
-        <h2>D365 Training Hub</h2>
+        <h2>Atlas Training Hub</h2>
         <p>Procedure guides, quick reference guides, recordings and templates for Dynamics 365 at WiseTech Global, part of the Atlas Program.</p>
       </div>
       <nav aria-label="Footer">
         <ul>
           <li><a data-link="home">Atlas home</a></li>
           <li><a data-link="supportHub">D365 User Support Hub</a></li>
+          <li><a data-link="faqs">Frequently asked questions</a></li>
           <li><a data-link="procedureGuides">D365 Procedure Guides</a></li>
+          <li><a data-link="templates">D365 Templates</a></li>
           <li><a data-link="trainingLibrary">Training library</a></li>
           <li><a data-link="siteContents">Site contents</a></li>
         </ul>
@@ -657,17 +661,19 @@ button { cursor: pointer; }
       procedureGuides: "/Training/Forms/AllItems.aspx?id=%2Fsites%2FAtlas%2FTraining%2FD365%20Procedure%20Guides",
       procedureGuideFiles: "/Training/D365 Procedure Guides/",
       trainingLibrary: "/Training/Forms/AllItems.aspx",
+      templates: "/Training/Forms/AllItems.aspx?id=%2Fsites%2FAtlas%2FTraining%2FD365%20Templates&viewid=666d0e64%2D6326%2D4a2b%2D937d%2Dd8343dd2bf6c",
+      faqs: "/SitePages/Frequently-Asked-Questions.aspx",
       // Not confirmed yet: each opens the Training library until it points at its own folder or page
       briefingSessions: "/Training/Forms/AllItems.aspx",
       recordings: "/Training/Forms/AllItems.aspx",
       quickReference: "/Training/Forms/AllItems.aspx",
-      templates: "/Training/Forms/AllItems.aspx",
       siteContents: "/_layouts/15/viewlsts.aspx",
       search: "/_layouts/15/search.aspx/siteall?q="
     },
 
-    // Links outside the site: paste the full URL of each one
+    // Links outside the site open in a new tab: paste the full URL of each one
     external: {
+      supportForm: "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=hTlJi7ThlUut5pisr9vbAW3nO37qt5xOuxzkvF2Oy7BUNzZWVEhZMzBDWjFPRlNQVEFGVVpSNjJRUiQlQCN0PWcu",
       trainingEnvironment: ""  // D365 training environment; until it is set, "Put it into practice" opens the recordings
     }
   };
@@ -754,8 +760,8 @@ button { cursor: pointer; }
       return;
     }
     a.href = url;
-    a.target = CONFIG.linkTarget;
-    if (CONFIG.linkTarget === "_blank") a.rel = "noopener";
+    a.target = url.startsWith(site) ? CONFIG.linkTarget : "_blank";
+    if (a.target === "_blank") a.rel = "noopener";
   }
   function applyLinks(root = document) {
     $$("a[data-link]", root).forEach((a) => {
@@ -924,7 +930,7 @@ button { cursor: pointer; }
   renderLibrary();
   renderPaths();
   applyLinks();
-  if (missing.size) console.warn(`D365 Training Hub: set these links in CONFIG before publishing: ${[...missing].join(", ")}`);
+  if (missing.size) console.warn(`Atlas Training Hub: set these links in CONFIG before publishing: ${[...missing].join(", ")}`);
 })();
 </script>
 </body>

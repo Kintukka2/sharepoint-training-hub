@@ -1,8 +1,8 @@
-# D365 Training Hub: plan
+# Atlas Training Hub: plan
 
 Draft 0.1 · 23 Oct 2026 · Homepage prototype: [`prototype/home.html`](../prototype/home.html) · [live preview](https://claude.ai/artifact/JaF5CzfGopBHiwbvLhaFMm)
 
-The D365 Training Hub is the one place a WiseTech Global employee goes to learn and carry out a Dynamics 365 process correctly. It holds four mandatory resource types (procedure guides, quick reference guides, recordings and templates), organized by process area and by role, and it tells people when a process changes.
+The Atlas Training Hub is the one place a WiseTech Global employee goes to learn and carry out a Dynamics 365 process correctly. It holds four mandatory resource types (procedure guides, quick reference guides, recordings and templates), organized by process area and by role, and it tells people when a process changes.
 
 This plan covers what the site contains, how it is organized, how each part is built in SharePoint, and how the content stays current. The homepage prototype shows the design. Everything in it (names, codes, dates, counts) is sample content until the current-state inventory replaces it.
 
@@ -57,7 +57,7 @@ Business areas and owners come from the library's Business Area and BPO columns 
 ## 4. Site map
 
 ```
-D365 Training Hub (communication site)
+Atlas Training Hub (Site Pages on the WTG - Atlas site)
 ├── Home
 ├── Procedure guides            library view, grouped by process area
 ├── Quick reference guides      library view
@@ -167,7 +167,7 @@ Map the crawled properties to refinable managed properties (site-collection sear
 
 Phase 1 ships with native web parts plus PnP Modern Search. It delivers everything on the homepage except the resume card and personal path progress, which arrive with SPFx in phase 2.
 
-**Homepage as a SharePoint HTML page (chosen route).** SharePoint now accepts uploaded HTML pages in Site Pages (preview October 2026, general availability mid-November to late December 2026). The homepage ships that way: [`sharepoint/d365-training-hub.html`](../sharepoint/d365-training-hub.html) is one self-contained file with the brand fonts embedded, every link set from one settings block, and no outside scripts. SharePoint renders it in a sandboxed frame below its own header and navigation, which sets these limits:
+**Homepage as a SharePoint HTML page (chosen route).** SharePoint now accepts uploaded HTML pages in Site Pages (preview October 2026, general availability mid-November to late December 2026). The homepage ships that way: [`sharepoint/atlas-training-hub.html`](../sharepoint/atlas-training-hub.html) is one self-contained file with the brand fonts embedded, every link set from one settings block, and no outside scripts. SharePoint renders it in a sandboxed frame below its own header and navigation, which sets these limits:
 
 | Limit | Effect on the homepage |
 | --- | --- |
@@ -231,7 +231,8 @@ Send these and the prototype's sample content gets replaced with the real thing:
 - [x] Current pages: Atlas home, Atlas Training Hub, D365 User Support Hub (from screenshots, 23 Oct 2026)
 - [ ] Every current page, its purpose and its owner
 - [x] D365 Procedure Guides: 30 guides with business area and BPO (from screenshots; one Procurement and one R2R guide were not visible)
-- [ ] Folder or page locations for Briefing Sessions, Training Recordings, QRGs and templates
+- [x] Links: D365 Templates folder, FAQs page, D365 User Support Hub, D365 support form
+- [ ] Folder or page locations for Briefing Sessions, Training Recordings and QRGs
 - [ ] An export of the current libraries: title, type, process area, owner, last modified, file type
 - [ ] The current navigation
 - [ ] Usage: most-viewed pages and documents, top search terms

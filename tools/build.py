@@ -2,9 +2,9 @@
 
     python3 tools/build.py [--preview PATH]
 
-Reads sharepoint/src/d365-training-hub.html, embeds the WOFF2 fonts in sharepoint/fonts as base64
+Reads sharepoint/src/atlas-training-hub.html, embeds the WOFF2 fonts in sharepoint/fonts as base64
 @font-face rules (SharePoint HTML pages run in a sandbox, so the page cannot rely on Google Fonts),
-and writes sharepoint/d365-training-hub.html: the single file to upload to Site Pages.
+and writes sharepoint/atlas-training-hub.html: the single file to upload to Site Pages.
 
 With --preview, also writes a body-only copy for the Claude artifact preview, which supplies its own
 document wrapper.
@@ -15,9 +15,9 @@ import pathlib
 import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-SRC = ROOT / "sharepoint" / "src" / "d365-training-hub.html"
+SRC = ROOT / "sharepoint" / "src" / "atlas-training-hub.html"
 FONTS = ROOT / "sharepoint" / "fonts"
-OUT = ROOT / "sharepoint" / "d365-training-hub.html"
+OUT = ROOT / "sharepoint" / "atlas-training-hub.html"
 FONTS_MARKER = re.compile(r"^[ \t]*<!-- @fonts:.*?-->[ \t]*\n", re.M)
 
 FACES = [
