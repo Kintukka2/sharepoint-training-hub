@@ -41,18 +41,18 @@ The four mandatory types are first-class. Each has a code prefix, a color in the
 
 Supporting types: **change notice** (news post), **learning path** (list), **training session** (event), **FAQ** and **glossary term** (lists).
 
-**Document codes** follow `TYPE-AREA-NNN`, for example `PG-AP-014`. The code never changes when the title does, so links, search and conversations stay stable.
+**Guide numbers** follow the existing D365 Procedure Guides library on the WTG - Atlas site: each business area owns a number range, and the file is named `<number>-<title> PG.pdf`, for example `301-Vendor Invoices PG.pdf`. The number never changes when the title does, so links, search and conversations stay stable. QRGs, recordings and templates take the number of the procedure guide they support.
 
-| Area code | Process area | Area code | Process area |
-| --- | --- | --- | --- |
-| `FND` | D365 fundamentals | `FA` | Fixed assets |
-| `GL` | General ledger | `CB` | Cash and bank management |
-| `AP` | Accounts payable | `PMA` | Project management and accounting |
-| `AR` | Accounts receivable | `BUD` | Budgeting |
-| `PRO` | Procurement and sourcing | `RPT` | Financial reporting |
-| `EXP` | Expense management | `WF` | Workflow and approvals |
+| Range | Business area | Business Process Owner |
+| --- | --- | --- |
+| 100s | Acquire to Retire (A2R) | Sarah Ge, Joe Turner |
+| 200s | Order to Cash (O2C) | Christopher Clarke |
+| 300–302 | Procure to Pay (P2P) | Ghada Boulos |
+| 303–304 | Procurement | Wayne Louys, Ghada Boulos |
+| 398–399 | RCTI | Christopher Clarke, Ghada Boulos |
+| 400s | Record to Report (R2R) | Sarah Ge, Joe Turner |
 
-The process areas are the working draft for D365 Finance and Operations. The current-state inventory confirms or replaces them (section 11).
+Business areas and owners come from the library's Business Area and BPO columns (October 2026).
 
 ## 4. Site map
 
@@ -228,7 +228,10 @@ PnP Modern Search and SPFx remain the route for a live, personalized library lat
 
 Send these and the prototype's sample content gets replaced with the real thing:
 
+- [x] Current pages: Atlas home, Atlas Training Hub, D365 User Support Hub (from screenshots, 23 Oct 2026)
 - [ ] Every current page, its purpose and its owner
+- [x] D365 Procedure Guides: 30 guides with business area and BPO (from screenshots; one Procurement and one R2R guide were not visible)
+- [ ] Folder or page locations for Briefing Sessions, Training Recordings, QRGs and templates
 - [ ] An export of the current libraries: title, type, process area, owner, last modified, file type
 - [ ] The current navigation
 - [ ] Usage: most-viewed pages and documents, top search terms
