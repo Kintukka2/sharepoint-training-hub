@@ -2,28 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Training Hub Home</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Training Hub homepage for SharePoint: quick links, project timeline, action required, role resources, bookmarks and feedback">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<!-- @fonts: tools/build.py replaces this line with DM Sans and DM Mono embedded as base64 WOFF2 -->
 <!--
-  Training Hub homepage for SharePoint.
+  Training Hub homepage, SharePoint HTML page.
 
-  Everything is scoped under .th (CSS) and #th-root (script), so the page can sit in an
-  Embed web part iframe or be pasted into a script-editor web part without touching SharePoint's
-  own chrome. The layout and content render without JavaScript; the script adds the live parts
-  (greeting, timeline status, due-date flags, role tabs, bookmarks, feedback, search).
+  SharePoint renders this file in a sandboxed frame below its own header and navigation: no data calls,
+  no browser storage and no form submission. tools/build.py embeds the fonts and the photos in
+  sharepoint/images, so the upload is one self-contained file. CSS is scoped under .th and script under
+  #th-root. The layout and content render without script; the script adds the timeline status, due-date
+  flags, role tabs, bookmarks, feedback and search.
 
   To edit content, search this file for:
+    SETTINGS        site URL, where links open, feedback form, due-soon window (in the script at the bottom)
     QUICK LINKS     the eight hero tiles (replace each href="#")
     TIMELINE        milestones: one <li> each, oldest first
     ACTION REQUIRED mandatory items with a due date
     ROLE CARDS      four cards per role tab
     BOOKMARKS       default bookmarks
-    SETTINGS        feedback list, search URL, due-soon window (in the script at the bottom)
 -->
 <style>
 /* Layout: a full-width lavender hero with a portrait arch and glass quick-link tiles, then a 1200px
@@ -553,7 +551,12 @@ body:has(> .th) { margin: 0; background: var(--th-lilac); }
   transition: transform 180ms var(--th-ease), box-shadow 180ms var(--th-ease);
 }
 .th-card:hover { transform: translateY(-3px); box-shadow: var(--th-shadow-lift); }
-.th-card img { width: 100%; height: auto; aspect-ratio: 5 / 4; object-fit: cover; background: var(--th-accent-soft); }
+/* Card photos are CSS backgrounds so each one is embedded once, however many role tabs reuse it. */
+.th-card-img { display: block; width: 100%; aspect-ratio: 5 / 4; background: var(--th-accent-soft) 50% 50% / cover no-repeat; }
+.th-card-img.is-learning-paths { background-image: url("images/learning-paths.jpg"); }
+.th-card-img.is-learning-hub { background-image: url("images/learning-hub.jpg"); }
+.th-card-img.is-career-development { background-image: url("images/career-development.jpg"); }
+.th-card-img.is-employee-support { background-image: url("images/employee-support.jpg"); }
 .th-card-body { display: grid; gap: 6px; padding: 16px 18px 22px; }
 .th-card h3 { font: 700 17px/1.3 var(--th-font); color: var(--th-navy); }
 .th-card p { font-size: 13.5px; line-height: 1.5; color: var(--th-muted); }
@@ -762,15 +765,15 @@ body:has(> .th) { margin: 0; background: var(--th-lilac); }
   <div class="th-wrap th-hero-in">
     <div class="th-hero-copy">
       <span class="th-badge"><svg class="th-ic" aria-hidden="true"><use href="#th-i-cap"/></svg>Training Hub</span>
-      <h1 class="th-h1" id="th-greeting" data-th-greeting>How can I help you today?</h1>
+      <h1 class="th-h1" id="th-greeting">How can I help you today?</h1>
       <p class="th-lede">Welcome to the Training Hub. This is your central place for training, resources, and tools.</p>
-      <form class="th-search" role="search" data-th-search>
+      <div class="th-search" role="search" data-th-search>
         <svg class="th-ic" aria-hidden="true"><use href="#th-i-sparkle"/></svg>
         <label class="th-sr" for="th-search-q">Search training resources</label>
-        <input id="th-search-q" name="q" type="search" placeholder="Search training resources, guides and more…" autocomplete="off">
-        <button class="th-icon-btn" type="submit" aria-label="Search"><svg class="th-ic" aria-hidden="true"><use href="#th-i-send"/></svg></button>
-        <button class="th-icon-btn th-search-clear" type="reset" aria-label="Clear search"><svg class="th-ic" aria-hidden="true"><use href="#th-i-x"/></svg></button>
-      </form>
+        <input id="th-search-q" type="search" placeholder="Search training resources, guides and more…" autocomplete="off" enterkeyhint="search">
+        <button class="th-icon-btn" type="button" aria-label="Search" data-th-search-go><svg class="th-ic" aria-hidden="true"><use href="#th-i-send"/></svg></button>
+        <button class="th-icon-btn th-search-clear" type="button" aria-label="Clear search" data-th-search-clear><svg class="th-ic" aria-hidden="true"><use href="#th-i-x"/></svg></button>
+      </div>
     </div>
 
     <figure class="th-hero-photo">
@@ -909,30 +912,30 @@ body:has(> .th) { margin: 0; background: var(--th-lilac); }
     <button class="th-tab" type="button" role="tab" id="th-tab-snr" aria-controls="th-role-snr" aria-selected="false" tabindex="-1">Senior Manager</button>
   </div>
 
-  <!-- ROLE CARDS: four cards per role. Replace href="#" and the images with your own. -->
+  <!-- ROLE CARDS: four cards per role. Replace href="#". Photos: the th-card-img classes near the end of the styles. -->
   <div class="th-cards" role="tabpanel" id="th-role-all" aria-labelledby="th-tab-all">
-    <a class="th-card" href="#"><img src="images/learning-paths.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Learning Paths</h3><p>Structured training programs designed to build skills and support career growth.</p></div></a>
-    <a class="th-card" href="#"><img src="images/learning-hub.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Learning Hub</h3><p>Access courses, learning materials, certifications, and development resources.</p></div></a>
-    <a class="th-card" href="#"><img src="images/career-development.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Career Development</h3><p>Explore opportunities, build professional skills, and support long-term career advancement.</p></div></a>
-    <a class="th-card" href="#"><img src="images/employee-support.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Employee Support</h3><p>Find workplace resources, guidance, policies, and support for everyday needs.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-paths" aria-hidden="true"></span><div class="th-card-body"><h3>Learning Paths</h3><p>Structured training programs designed to build skills and support career growth.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-hub" aria-hidden="true"></span><div class="th-card-body"><h3>Learning Hub</h3><p>Access courses, learning materials, certifications, and development resources.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-career-development" aria-hidden="true"></span><div class="th-card-body"><h3>Career Development</h3><p>Explore opportunities, build professional skills, and support long-term career advancement.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-employee-support" aria-hidden="true"></span><div class="th-card-body"><h3>Employee Support</h3><p>Find workplace resources, guidance, policies, and support for everyday needs.</p></div></a>
   </div>
   <div class="th-cards" role="tabpanel" id="th-role-assoc" aria-labelledby="th-tab-assoc" hidden>
-    <a class="th-card" href="#"><img src="images/learning-paths.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Getting Started</h3><p>Your first steps in D365: access, navigation and the basics of your process area.</p></div></a>
-    <a class="th-card" href="#"><img src="images/learning-hub.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Everyday Tasks</h3><p>Procedure guides and quick reference guides for the tasks you do every day.</p></div></a>
-    <a class="th-card" href="#"><img src="images/employee-support.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Session Recordings</h3><p>Watch past training sessions at your own pace, chaptered by task.</p></div></a>
-    <a class="th-card" href="#"><img src="images/career-development.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Get Help</h3><p>Who to ask, where to raise a ticket, and when the next drop-in session runs.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-paths" aria-hidden="true"></span><div class="th-card-body"><h3>Getting Started</h3><p>Your first steps in D365: access, navigation and the basics of your process area.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-hub" aria-hidden="true"></span><div class="th-card-body"><h3>Everyday Tasks</h3><p>Procedure guides and quick reference guides for the tasks you do every day.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-employee-support" aria-hidden="true"></span><div class="th-card-body"><h3>Session Recordings</h3><p>Watch past training sessions at your own pace, chaptered by task.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-career-development" aria-hidden="true"></span><div class="th-card-body"><h3>Get Help</h3><p>Who to ask, where to raise a ticket, and when the next drop-in session runs.</p></div></a>
   </div>
   <div class="th-cards" role="tabpanel" id="th-role-mgr" aria-labelledby="th-tab-mgr" hidden>
-    <a class="th-card" href="#"><img src="images/learning-paths.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Approvals &amp; Workflow</h3><p>Approve invoices, expenses and purchase requests correctly and on time.</p></div></a>
-    <a class="th-card" href="#"><img src="images/learning-hub.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Team Training Status</h3><p>See which mandatory training is due across your team.</p></div></a>
-    <a class="th-card" href="#"><img src="images/career-development.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Leading Through Change</h3><p>Help your team prepare for go-live and settle into new processes.</p></div></a>
-    <a class="th-card" href="#"><img src="images/employee-support.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Coaching Your Team</h3><p>Guides for running team huddles, check-ins and on-the-job coaching.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-paths" aria-hidden="true"></span><div class="th-card-body"><h3>Approvals &amp; Workflow</h3><p>Approve invoices, expenses and purchase requests correctly and on time.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-hub" aria-hidden="true"></span><div class="th-card-body"><h3>Team Training Status</h3><p>See which mandatory training is due across your team.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-career-development" aria-hidden="true"></span><div class="th-card-body"><h3>Leading Through Change</h3><p>Help your team prepare for go-live and settle into new processes.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-employee-support" aria-hidden="true"></span><div class="th-card-body"><h3>Coaching Your Team</h3><p>Guides for running team huddles, check-ins and on-the-job coaching.</p></div></a>
   </div>
   <div class="th-cards" role="tabpanel" id="th-role-snr" aria-labelledby="th-tab-snr" hidden>
-    <a class="th-card" href="#"><img src="images/employee-support.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Go-live Readiness</h3><p>Readiness checkpoints, decisions and sign-offs for each wave.</p></div></a>
-    <a class="th-card" href="#"><img src="images/learning-hub.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Adoption Insights</h3><p>Training completion and adoption across your teams.</p></div></a>
-    <a class="th-card" href="#"><img src="images/career-development.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Leadership Messages</h3><p>Key messages and talking points to share with your teams.</p></div></a>
-    <a class="th-card" href="#"><img src="images/learning-paths.jpg" alt="" width="640" height="440" loading="lazy"><div class="th-card-body"><h3>Career Development</h3><p>Grow your leaders and plan development across your organisation.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-employee-support" aria-hidden="true"></span><div class="th-card-body"><h3>Go-live Readiness</h3><p>Readiness checkpoints, decisions and sign-offs for each wave.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-hub" aria-hidden="true"></span><div class="th-card-body"><h3>Adoption Insights</h3><p>Training completion and adoption across your teams.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-career-development" aria-hidden="true"></span><div class="th-card-body"><h3>Leadership Messages</h3><p>Key messages and talking points to share with your teams.</p></div></a>
+    <a class="th-card" href="#"><span class="th-card-img is-learning-paths" aria-hidden="true"></span><div class="th-card-body"><h3>Career Development</h3><p>Grow your leaders and plan development across your organisation.</p></div></a>
   </div>
 </section>
 
@@ -940,31 +943,32 @@ body:has(> .th) { margin: 0; background: var(--th-lilac); }
 <div class="th-wrap th-lower">
   <section class="th-bookmarks" aria-labelledby="th-bm-title" data-th-bookmarks>
     <div class="th-sec-head"><h2 class="th-h2" id="th-bm-title">My Training Bookmarks</h2></div>
-    <!-- BOOKMARKS: default set. People can add and remove their own (saved in their browser). Icons: cap | briefcase | buoy | link -->
+    <!-- BOOKMARKS: default set. Icons: cap | briefcase | buoy | link. People can add and remove their own;
+         SharePoint HTML pages have no browser storage, so those changes last until they leave the page. -->
     <ul class="th-bm-list">
       <li class="th-bm-item is-fixed"><button class="th-bm-toggle" type="button" aria-expanded="false" aria-controls="th-bm-form" data-th-bm-toggle><svg class="th-ic" aria-hidden="true"><use href="#th-i-plus"/></svg>Add/ Remove</button></li>
       <li class="th-bm-item"><a class="th-bm" href="#"><svg class="th-ic" aria-hidden="true"><use href="#th-i-cap"/></svg><span>Training</span></a></li>
       <li class="th-bm-item"><a class="th-bm" href="#"><svg class="th-ic" aria-hidden="true"><use href="#th-i-briefcase"/></svg><span>Program</span></a></li>
       <li class="th-bm-item"><a class="th-bm" href="#"><svg class="th-ic" aria-hidden="true"><use href="#th-i-buoy"/></svg><span>IT Helpdesk</span></a></li>
     </ul>
-    <form class="th-bm-form" id="th-bm-form" hidden>
-      <label for="th-bm-name">Name<input id="th-bm-name" name="bm-title" maxlength="40" required autocomplete="off"></label>
-      <label for="th-bm-url">Link<input id="th-bm-url" name="bm-url" type="url" placeholder="https://" required autocomplete="off"></label>
-      <button class="th-btn" type="submit">Add</button>
-      <p class="th-bm-hint">Remove a bookmark with its red button. Your bookmarks are saved in this browser.</p>
-    </form>
+    <div class="th-bm-form" id="th-bm-form" role="group" aria-label="Add a bookmark" hidden>
+      <label for="th-bm-name">Name<input id="th-bm-name" maxlength="40" autocomplete="off"></label>
+      <label for="th-bm-url">Link<input id="th-bm-url" type="url" placeholder="https://" autocomplete="off"></label>
+      <button class="th-btn" type="button" data-th-bm-add>Add</button>
+      <p class="th-bm-hint" data-th-bm-hint>Remove a bookmark with its red button.</p>
+    </div>
   </section>
 
   <section aria-labelledby="th-fb-title">
     <div class="th-sec-head"><h2 class="th-h2" id="th-fb-title">Feedback</h2></div>
-    <form class="th-fb" data-th-feedback>
+    <div class="th-fb" data-th-feedback>
       <label class="th-sr" for="th-fb-text">Your feedback</label>
-      <textarea id="th-fb-text" name="feedback" maxlength="2000" placeholder="Let us know how we can improve our training program!"></textarea>
+      <textarea id="th-fb-text" maxlength="1000" placeholder="Let us know how we can improve our training program!"></textarea>
       <div class="th-fb-row">
-        <button class="th-btn" type="submit">Submit</button>
+        <button class="th-btn" type="button" data-th-fb-send>Submit</button>
         <p class="th-fb-msg" role="status" aria-live="polite"></p>
       </div>
-    </form>
+    </div>
   </section>
 </div>
 </main>
@@ -983,14 +987,28 @@ body:has(> .th) { margin: 0; background: var(--th-lilac); }
 (function () {
   "use strict";
 
-  /* ---------- SETTINGS ---------- */
+  /* =====================================================================
+     SETTINGS: set these once before uploading the page to SharePoint
+     ===================================================================== */
   var SETTINGS = {
-    feedbackList: "Training Hub Feedback",               // SharePoint list that receives feedback
-    feedbackField: "Comments",                           // a "Multiple lines of text" column in that list
-    searchPath: "/_layouts/15/search.aspx/siteall?q=",   // added to the site URL for hero search
-    urgentWithinDays: 7,                                 // Action Required cards turn pink inside this window
-    today: ""                                            // "YYYY-MM-DD" previews the page as of another date
+    // Full URL of the Training Hub site, with no trailing slash. Hero search opens this site's search results.
+    siteUrl: "https://YOUR-TENANT.sharepoint.com/sites/TrainingHub",
+
+    // Where links open. "_top" replaces the whole SharePoint page; "_blank" opens a new tab.
+    // If links do nothing after upload, switch this to "_blank".
+    linkTarget: "_top",
+
+    // Microsoft Forms link that Feedback's Submit button opens in a new tab. To carry the typed text across,
+    // use the form's pre-filled link with FEEDBACK as the answer to the feedback question.
+    feedbackForm: "",
+
+    // Action Required items turn pink this many days before they are due
+    urgentWithinDays: 7,
+
+    // "YYYY-MM-DD" shows the timeline and due dates as of another day (leave empty for today)
+    today: ""
   };
+  var SEARCH_PATH = "/_layouts/15/search.aspx/siteall?q=";
 
   var root = document.getElementById("th-root");
   if (!root) return;
@@ -1010,20 +1028,15 @@ body:has(> .th) { margin: 0; background: var(--th-lilac); }
   function daysBetween(a, b) { return Math.round((b - a) / 864e5); }
   var today = parseDate(SETTINGS.today) || (function () { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); })();
 
-  /* ---------- SharePoint context ---------- */
-  var parentWin = (function () {
-    try { return window.parent !== window && window.parent.location.href ? window.parent : null; } catch (e) { return null; }
-  })();
-  function pageContext() {
-    try { return window._spPageContextInfo || (parentWin && parentWin._spPageContextInfo) || null; } catch (e) { return null; }
+  function openUrl(url, target) {
+    var w = window.open(url, target);
+    if (!w) toast("The link was blocked. Set linkTarget to “_blank” in SETTINGS.");
+    return w;
   }
-  var SITE = (function () {
-    var ctx = pageContext();
-    if (ctx && ctx.webAbsoluteUrl) return ctx.webAbsoluteUrl;
-    if (!/\.sharepoint\.com$/i.test(location.hostname)) return null;
-    var m = /^(.*?)\/(SiteAssets|SitePages|Shared%20Documents)\//i.exec(location.origin + location.pathname);
-    return m ? m[1] : null;
-  })();
+  function setTarget(a) {
+    a.target = SETTINGS.linkTarget;
+    if (SETTINGS.linkTarget === "_blank") a.rel = "noopener";
+  }
 
   /* ---------- Toast ---------- */
   var toastEl = $(".th-toast"), toastTimer;
@@ -1035,8 +1048,8 @@ body:has(> .th) { margin: 0; background: var(--th-lilac); }
   }
 
   /* ---------- Links ---------- */
-  // Inside a same-site iframe (Embed web part), links open in the SharePoint page, not the frame.
-  if (parentWin) $$("a[href]").forEach(function (a) { if (a.getAttribute("href").charAt(0) !== "#") a.target = "_top"; });
+  // SharePoint shows the page in a frame: send real links to the whole page (or a new tab).
+  $$("a[href]").forEach(function (a) { if (a.getAttribute("href").charAt(0) !== "#") setTarget(a); });
   root.addEventListener("click", function (e) {
     var a = e.target.closest ? e.target.closest('a[href="#"]') : null;
     if (!a || !root.contains(a)) return;
@@ -1048,39 +1061,21 @@ body:has(> .th) { margin: 0; background: var(--th-lilac); }
   var year = $("[data-th-year]");
   if (year) year.textContent = String(new Date().getFullYear());
 
-  /* ---------- Greeting ---------- */
-  (function () {
-    var h = $("[data-th-greeting]");
-    if (!h) return;
-    function set(name) {
-      name = String(name || "");
-      if (name.indexOf(",") > -1) name = name.split(",")[1];      // "Surname, Given" directories
-      var first = name.trim().split(/\s+/)[0];
-      if (first) h.textContent = "How can I help you, " + first + "?";
-    }
-    var ctx = pageContext();
-    if (ctx && ctx.userDisplayName) { set(ctx.userDisplayName); return; }
-    if (SITE && window.fetch) {
-      fetch(SITE + "/_api/web/currentuser?$select=Title", { credentials: "same-origin", headers: { Accept: "application/json;odata=nometadata" } })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (d) { if (d) set(d.Title); })
-        .catch(function () {});
-    }
-  })();
-
   /* ---------- Search ---------- */
+  // No <form>: SharePoint's sandbox blocks form submission, so Enter and the button run the search.
   (function () {
-    var form = $("[data-th-search]");
-    if (!form) return;
-    var input = form.querySelector("input");
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
+    var box = $("[data-th-search]");
+    if (!box) return;
+    var input = box.querySelector("input");
+    function search() {
       var q = input.value.trim();
       if (!q) { input.focus(); return; }
-      if (SITE) (parentWin || window).location.href = SITE + SETTINGS.searchPath + encodeURIComponent(q);
-      else toast("On SharePoint this opens the site's search results for “" + q + "”.");
-    });
-    form.addEventListener("reset", function () { setTimeout(function () { input.focus(); }, 0); });
+      if (/YOUR-TENANT/.test(SETTINGS.siteUrl)) { toast("Set siteUrl in SETTINGS to search “" + q + "” on the site."); return; }
+      openUrl(SETTINGS.siteUrl.replace(/\/+$/, "") + SEARCH_PATH + encodeURIComponent(q), SETTINGS.linkTarget);
+    }
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); search(); } });
+    $("[data-th-search-go]", box).addEventListener("click", search);
+    $("[data-th-search-clear]", box).addEventListener("click", function () { input.value = ""; input.focus(); });
   })();
 
   /* ---------- Timeline ---------- */
@@ -1243,6 +1238,12 @@ body:has(> .th) { margin: 0; background: var(--th-lilac); }
     var KEY = "th-training-bookmarks-v1";
     var ICONS = { cap: 1, briefcase: 1, buoy: 1, link: 1 };
     var list = $(".th-bm-list", box), toggle = $("[data-th-bm-toggle]", box), form = $(".th-bm-form", box);
+    var nameIn = $("#th-bm-name", box), urlIn = $("#th-bm-url", box);
+    var canStore = (function () {
+      try { localStorage.setItem(KEY + "-test", "1"); localStorage.removeItem(KEY + "-test"); return true; } catch (e) { return false; }
+    })();
+    $("[data-th-bm-hint]", box).textContent = "Remove a bookmark with its red button. " +
+      (canStore ? "Your bookmarks are saved in this browser." : "Changes last until you leave this page.");
     function safeUrl(u) { return /^(https?:\/\/|\/|#$)/i.test(u || ""); }
     var marks = $$(".th-bm-item:not(.is-fixed) a", list).map(function (a) {
       var use = a.querySelector("use");
@@ -1262,7 +1263,7 @@ body:has(> .th) { margin: 0; background: var(--th-lilac); }
         var a = document.createElement("a");
         a.className = "th-bm";
         a.href = m.url;
-        if (parentWin && m.url.charAt(0) !== "#") a.target = "_top";
+        if (m.url.charAt(0) !== "#") setTarget(a);
         a.innerHTML = '<svg class="th-ic" aria-hidden="true"><use href="#th-i-' + (ICONS[m.icon] ? m.icon : "link") + '"/></svg>';
         var label = document.createElement("span");
         label.textContent = m.title;
@@ -1291,66 +1292,43 @@ body:has(> .th) { margin: 0; background: var(--th-lilac); }
       toggle.setAttribute("aria-expanded", String(open));
       box.classList.toggle("is-editing", open);
       form.hidden = !open;
-      if (open) form.querySelector("input").focus();
+      if (open) nameIn.focus();
     });
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var title = form.elements["bm-title"].value.trim(), url = form.elements["bm-url"].value.trim();
-      if (!title || !safeUrl(url)) { toast("Enter a name and a link that starts with https://"); return; }
+    function add() {
+      var title = nameIn.value.trim(), url = urlIn.value.trim();
+      if (!title || !/^https?:\/\//i.test(url)) { toast("Enter a name and a link that starts with https://"); return; }
       marks.push({ title: title, url: url, icon: "link" });
       save();
       render();
-      form.reset();
-      form.querySelector("input").focus();
+      nameIn.value = "";
+      urlIn.value = "";
+      nameIn.focus();
       toast("Added “" + title + "” to your bookmarks.");
+    }
+    $("[data-th-bm-add]", box).addEventListener("click", add);
+    [nameIn, urlIn].forEach(function (el) {
+      el.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); add(); } });
     });
   })();
 
   /* ---------- Feedback ---------- */
+  // The page cannot send data, so Submit opens the Microsoft Forms link in SETTINGS with the text filled in.
   (function () {
-    var form = $("[data-th-feedback]");
-    if (!form) return;
-    var text = form.querySelector("textarea"), msg = $(".th-fb-msg", form), btn = form.querySelector('button[type="submit"]');
+    var box = $("[data-th-feedback]");
+    if (!box) return;
+    var text = box.querySelector("textarea"), msg = $(".th-fb-msg", box);
     function say(t, isError) { msg.textContent = t; msg.classList.toggle("is-error", !!isError); }
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
+    $("[data-th-fb-send]", box).addEventListener("click", function () {
       var value = text.value.trim();
       if (!value) { say("Write your feedback first, then select Submit.", true); text.focus(); return; }
-      if (!SITE || !window.fetch) { say("Preview only. On SharePoint, feedback goes to the “" + SETTINGS.feedbackList + "” list."); return; }
-      btn.disabled = true;
-      say("Sending…");
-      var api = SITE + "/_api";
-      var json = "application/json;odata=nometadata";
-      fetch(api + "/contextinfo", { method: "POST", credentials: "same-origin", headers: { Accept: json } })
-        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-        .then(function (ctx) {
-          var item = { Title: "Training Hub feedback" };
-          item[SETTINGS.feedbackField] = value;
-          var listName = encodeURIComponent(SETTINGS.feedbackList.replace(/'/g, "''"));
-          return fetch(api + "/web/lists/getbytitle('" + listName + "')/items", {
-            method: "POST",
-            credentials: "same-origin",
-            headers: { Accept: json, "Content-Type": json, "X-RequestDigest": ctx.FormDigestValue },
-            body: JSON.stringify(item)
-          });
-        })
-        .then(function (r) {
-          if (!r.ok) throw new Error(r.status);
-          text.value = "";
-          say("Thanks. Your feedback is with the training team.");
-        })
-        .catch(function () { say("Your feedback wasn't sent. Check that the “" + SETTINGS.feedbackList + "” list exists and that you can add items to it.", true); })
-        .then(function () { btn.disabled = false; });
+      if (!SETTINGS.feedbackForm) { say("Feedback isn't connected yet. Add the Microsoft Forms link to SETTINGS.feedbackForm."); return; }
+      var url = SETTINGS.feedbackForm.replace("FEEDBACK", encodeURIComponent(value));
+      var w = window.open(url, "_blank");
+      if (!w) { say("Your browser blocked the feedback form. Allow pop-ups for this site, then select Submit again.", true); return; }
+      try { w.opener = null; } catch (e) {}
+      say("The feedback form opened in a new tab with your text. Select Submit there to send it.");
     });
   })();
-
-  /* ---------- Fit the Embed web part frame to the page ---------- */
-  try {
-    var frame = window.frameElement;
-    if (frame && window.ResizeObserver) {
-      new ResizeObserver(function () { frame.style.height = Math.ceil(root.getBoundingClientRect().height) + "px"; }).observe(root);
-    }
-  } catch (e) {}
 })();
 </script>
 </body>
