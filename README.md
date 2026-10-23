@@ -5,6 +5,7 @@ Planning and design for the **D365 Training Hub**, WiseTech Global's SharePoint 
 | Path | What it is |
 | --- | --- |
 | [`docs/PLAN.md`](docs/PLAN.md) | The plan: outcomes, audiences, resource types, site map, homepage sections, content model, SharePoint build approach, governance, roadmap and open decisions |
+| [`embed/training-hub.html`](embed/training-hub.html) | Training Hub homepage as one HTML file for SharePoint (Embed web part or script editor): new quick links, a Project Timeline with go-live countdown, Action Required, role resources, bookmarks and feedback. Setup steps in [`embed/README.md`](embed/README.md) |
 | [`prototype/home.html`](prototype/home.html) | High-fidelity, interactive homepage prototype on the WiseTech Global Design System. Live preview: https://claude.ai/artifact/JaF5CzfGopBHiwbvLhaFMm (private; share it from the page's Share menu) |
 
 ## The prototype
