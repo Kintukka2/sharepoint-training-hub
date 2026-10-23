@@ -18,10 +18,9 @@ Live preview of the homepage: https://claude.ai/artifact/JaF5CzfGopBHiwbvLhaFMm 
 
 ## Put the homepage on SharePoint
 
-1. Open `sharepoint/src/d365-training-hub.html` and fill in the **SETTINGS** block at the top of the script:
-   - `siteUrl`: the full URL of the training hub site
-   - `sitePaths`: change any page or library path that differs on your site
-   - `external`: the support portal, Teams channel, office hours booking page, Microsoft Forms suggestion form and training environment
+1. The **SETTINGS** block at the top of the script in `sharepoint/src/d365-training-hub.html` already points at the WTG - Atlas site (`https://wisetechglobal.sharepoint.com/sites/Atlas`): the Atlas home page, the D365 User Support Hub, the D365 Procedure Guides library and each guide's PDF. Still to set:
+   - `briefingSessions`, `recordings`, `quickReference` and `templates`: their folder or page paths (they open the Training library until then)
+   - `trainingEnvironment`: the D365 training environment URL (until then, "Put it into practice" opens the recordings)
 2. Build the upload file:
    ```sh
    python3 tools/build.py
@@ -34,7 +33,7 @@ Live preview of the homepage: https://claude.ai/artifact/JaF5CzfGopBHiwbvLhaFMm 
    - **Make homepage** is offered for the page in Site Pages
    - The page reads well in the SharePoint mobile app
 
-Until a resource has a direct link (the optional 10th value in each `ROWS` entry), its buttons search the site for its document code. Links left empty in `external` point nowhere and are listed in the browser console.
+The procedure guides, business areas and Business Process Owners live in the CONTENT block (`AREAS`, `PGS`, `PATHS`). Add a guide by adding a line to `PGS`; its PDF link is built from the number and title, matching the library's `<number>-<title> PG.pdf` file names. The learning paths are a proposed grouping of those guides by role.
 
 ## Training Hub homepage
 
@@ -74,4 +73,4 @@ All milestones, dates and role-card text are sample content.
 
 SharePoint renders the page in a sandboxed frame under its own header and navigation. Scripts must be inside the file, the page cannot fetch data or call APIs, browser storage is unavailable, forms cannot submit, and the HTML file can be up to 10 MB. Comments, likes, news promotion, scheduling, co-authoring and page templates are not available. Source: [Create, upload, edit, and publish HTML pages in SharePoint](https://support.microsoft.com/en-us/sharepoint/create-edit-publish-html-pages).
 
-So the page holds no personal content (no greeting by name, resume card, progress or "action required"), and the library, learning paths, sessions and change notices are data inside the file until they are replaced with the real content.
+So the page holds no personal content (no greeting by name, resume card, progress or "action required"), and the guide list is data inside the file: update `PGS` when guides are added or renamed.
